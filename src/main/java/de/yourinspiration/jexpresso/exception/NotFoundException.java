@@ -1,5 +1,11 @@
 package de.yourinspiration.jexpresso.exception;
 
+/**
+ * Represents a HTTP 404 status.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class NotFoundException extends HttpStatusException {
 
     private static final long serialVersionUID = -2906328483151240449L;

@@ -1,5 +1,11 @@
 package de.yourinspiration.jexpresso.exception;
 
+/**
+ * Represents a HTTP 406 status.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class NotAcceptableException extends HttpStatusException {
 
     private static final long serialVersionUID = -4487720404831554702L;

@@ -1,4 +1,4 @@
-package de.yourinspiration.jexpresso.template;
+package de.yourinspiration.jexpresso;
 
 import java.util.HashMap;
 import java.util.Map;

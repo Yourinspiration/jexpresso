@@ -5,6 +5,12 @@ import io.netty.handler.codec.http.Cookie;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a HTTP request.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public interface Request {
 
     /**
@@ -197,5 +203,25 @@ public interface Request {
      *         otherwise <code>false</code>
      */
     boolean secure();
+
+    /**
+     * Get a request attribute.
+     * 
+     * @param name
+     *            name of the attribute
+     * @return returns <code>null</code> if no attribute with the given name
+     *         exists.
+     */
+    Object attribute(final String name);
+
+    /**
+     * Set a request attribute.
+     * 
+     * @param name
+     *            the name of the attribute
+     * @param attr
+     *            the value of the attribute
+     */
+    void attribute(final String name, Object attr);
 
 }

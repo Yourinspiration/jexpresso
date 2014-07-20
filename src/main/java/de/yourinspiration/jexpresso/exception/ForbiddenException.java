@@ -1,5 +1,11 @@
 package de.yourinspiration.jexpresso.exception;
 
+/**
+ * Represents a HTTP 403 status.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class ForbiddenException extends HttpStatusException {
 
     private static final long serialVersionUID = 1107196534826049580L;

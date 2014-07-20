@@ -1,6 +1,5 @@
 package de.yourinspiration.jexpresso;
 
-
 /**
  * Callback handler for middleware.
  * 
@@ -16,7 +15,9 @@ public interface MiddlewareHandler {
      *            the current request
      * @param response
      *            the current response
+     * @param next
+     *            call the next handler
      */
-    void handle(Request request, Response response);
+    void handle(Request request, Response response, Next next);
 
 }

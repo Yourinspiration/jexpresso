@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.yourinspiration.jexpresso.http.ContentType;
-import de.yourinspiration.jexpresso.template.Options;
+import de.yourinspiration.jexpresso.http.HttpStatus;
 
 /**
  * Implementation for {@link Response}.
@@ -30,8 +30,6 @@ public class ResponseImpl implements Response {
     private Map<String, Object> options;
     private String template;
     private boolean isTemplate = false;
-
-    private boolean finished = false;
 
     protected ResponseImpl(final FullHttpResponse fullHttpResponse) {
         this.fullHttpResponse = fullHttpResponse;
@@ -70,13 +68,13 @@ public class ResponseImpl implements Response {
     // ========================================================
 
     @Override
-    public void status(final int status) {
-        fullHttpResponse.setStatus(HttpResponseStatus.valueOf(status));
+    public void status(final HttpStatus status) {
+        fullHttpResponse.setStatus(HttpResponseStatus.valueOf(status.value()));
     }
 
     @Override
-    public int status() {
-        return fullHttpResponse.getStatus().code();
+    public HttpStatus status() {
+        return HttpStatus.valueOf(fullHttpResponse.getStatus().code());
     }
 
     @Override
@@ -102,39 +100,32 @@ public class ResponseImpl implements Response {
     }
 
     @Override
-    public void clearCookie(String name) {
+    public void clearCookie(final String name) {
         throw new RuntimeException("not implemented yet");
     }
 
     @Override
-    public void redirect(String url) {
+    public void redirect(final String url) {
         throw new RuntimeException("not implemented yet");
     }
 
     @Override
-    public void location(String location) {
+    public void location(final String location) {
         set(LOCATION, location);
     }
 
     @Override
     public void send(final Object content) {
-        if (finished) {
-            throw new RuntimeException("send, json or render can only by called once");
-        }
         this.content = content;
         if (content instanceof String) {
             type(ContentType.TEXT_HTML.type());
         } else {
             type(ContentType.APPLICATION_JSON.type());
         }
-        this.finished = true;
     }
 
     @Override
-    public void send(int status, Object content) {
-        if (finished) {
-            throw new RuntimeException("send, json or render can only by called once");
-        }
+    public void send(final HttpStatus status, final Object content) {
         status(status);
         this.content = content;
         if (content instanceof String) {
@@ -142,60 +133,51 @@ public class ResponseImpl implements Response {
         } else {
             type(ContentType.APPLICATION_JSON.type());
         }
-        this.finished = true;
     }
 
     @Override
-    public void send(byte[] content) {
-        if (finished) {
-            throw new RuntimeException("send, json or render can only by called once");
-        }
+    public void send(final byte[] content) {
         this.bytes = content;
         type(ContentType.APPLICATION_OCTETSTREAM.type());
-        this.finished = true;
     }
 
     @Override
-    public void send(int status, byte[] content) {
+    public void send(final HttpStatus status, final byte[] content) {
         status(status);
         send(content);
     }
 
     @Override
-    public void send(int status) {
+    public void send(final HttpStatus status) {
         status(status);
-        send("");
+        send(status.getReasonPhrase());
     }
 
     @Override
     public void json(final Object content) {
-        if (finished) {
-            throw new RuntimeException("send, json or render can only by called once");
-        }
         this.content = content;
         type(ContentType.APPLICATION_JSON.type());
-        this.finished = true;
     }
 
     @Override
-    public void json(int status, Object content) {
+    public void json(final HttpStatus status, final Object content) {
         status(status);
         json(content);
     }
 
     @Override
-    public void jsonp(Object content) {
+    public void jsonp(final Object content) {
         throw new RuntimeException("not implemented yet");
     }
 
     @Override
-    public void jsonp(int status, Object content) {
+    public void jsonp(final HttpStatus status, final Object content) {
         status(status);
         jsonp(content);
     }
 
     @Override
-    public void type(String type) {
+    public void type(final String type) {
         fullHttpResponse.headers().set(CONTENT_TYPE, type);
     }
 
@@ -205,20 +187,16 @@ public class ResponseImpl implements Response {
     }
 
     @Override
-    public void render(String view, Options options) {
+    public void render(final String view, final Options options) {
         render(view, options.create());
     }
 
     @Override
     public void render(final String template, final Map<String, Object> options) {
-        if (finished) {
-            throw new RuntimeException("send, json or render can only by called once");
-        }
         type(ContentType.TEXT_HTML.type());
         this.template = template;
         this.options = options;
         this.isTemplate = true;
-        this.finished = true;
     }
 
 }

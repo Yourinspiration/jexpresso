@@ -5,6 +5,12 @@ import io.netty.handler.codec.http.HttpMethod;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Encapsulates the inforation about route mappings.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class Route {
 
     private final String path;

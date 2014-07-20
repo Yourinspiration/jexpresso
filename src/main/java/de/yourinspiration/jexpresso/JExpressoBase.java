@@ -17,8 +17,14 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
-import de.yourinspiration.jexpresso.template.TemplateEngine;
 
+/**
+ * Internal base class for a JExpresso application. Does not provide any public
+ * API.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class JExpressoBase {
 
     private final List<Route> routes = new ArrayList<>();

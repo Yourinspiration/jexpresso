@@ -4,8 +4,14 @@ import io.netty.handler.codec.http.Cookie;
 
 import java.util.Map;
 
-import de.yourinspiration.jexpresso.template.Options;
+import de.yourinspiration.jexpresso.http.HttpStatus;
 
+/**
+ * Represents a HTTP response.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public interface Response {
 
     /**
@@ -14,14 +20,14 @@ public interface Response {
      * @param status
      *            the HTTP status code
      */
-    void status(int status);
+    void status(HttpStatus status);
 
     /**
      * Get the HTTP status code.
      * 
      * @return the HTTP status code
      */
-    int status();
+    HttpStatus status();
 
     /**
      * Set header field to value.
@@ -105,7 +111,7 @@ public interface Response {
      * @param content
      *            the content to be sent
      */
-    void send(int status, Object content);
+    void send(HttpStatus status, Object content);
 
     /**
      * Send binary content. The Content-Type is set to
@@ -125,7 +131,7 @@ public interface Response {
      * @param content
      *            the content to be sent
      */
-    void send(int status, byte[] content);
+    void send(HttpStatus status, byte[] content);
 
     /**
      * Send the given status code. The response body is assigned for you
@@ -135,7 +141,7 @@ public interface Response {
      * @param status
      *            the status code
      */
-    void send(int status);
+    void send(HttpStatus status);
 
     /**
      * Send explicit JSON content.
@@ -153,7 +159,7 @@ public interface Response {
      * @param content
      *            the content to be sent
      */
-    void json(int status, Object content);
+    void json(HttpStatus status, Object content);
 
     /**
      * Send a JSON response with JSONP support. This method is identical to
@@ -178,7 +184,7 @@ public interface Response {
      * @param content
      *            the content to be sent
      */
-    void jsonp(int status, Object content);
+    void jsonp(HttpStatus status, Object content);
 
     /**
      * Sets the Content-Type to the mime lookup of type, or when "/" is present

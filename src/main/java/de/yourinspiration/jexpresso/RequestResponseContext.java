@@ -11,6 +11,12 @@ import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Provides access to data shared by the entire request-response-chain.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class RequestResponseContext {
 
     public static AttributeKey<RequestResponseContext> ATTR_KEY;
@@ -23,7 +29,7 @@ public class RequestResponseContext {
     private final Channel channel;
     private final ResponseImpl response;
 
-    public RequestResponseContext(final Channel channel, final ResponseImpl response) {
+    protected RequestResponseContext(final Channel channel, final ResponseImpl response) {
         this.channel = channel;
         this.response = response;
     }

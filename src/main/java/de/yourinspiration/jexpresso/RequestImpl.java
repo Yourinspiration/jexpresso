@@ -44,35 +44,19 @@ public class RequestImpl implements Request {
         this.gson = new Gson();
     }
 
-    public void setRoute(final Route route) {
+    protected void setRoute(final Route route) {
         this.route = route;
     }
 
-    public Object attribute(final String name) {
-        return requestResponseContext.getAttribute(name);
-    }
-
-    public void attribute(final String name, final Object obj) {
-        requestResponseContext.setAttribute(name, obj);
-    }
-
-    public String header(final String name) {
-        return fullHttpRequest.headers().get(name);
-    }
-
-    public FullHttpRequest fullHttpRequest() {
+    protected FullHttpRequest fullHttpRequest() {
         return fullHttpRequest;
     }
 
-    public String uri() {
-        return fullHttpRequest.getUri();
-    }
-
-    public HttpMethod method() {
+    protected HttpMethod method() {
         return fullHttpRequest.getMethod();
     }
 
-    public RequestResponseContext context() {
+    protected RequestResponseContext context() {
         return requestResponseContext;
     }
 
@@ -255,6 +239,16 @@ public class RequestImpl implements Request {
     public boolean secure() {
         final String protocol = protocol();
         return protocol.equalsIgnoreCase("https");
+    }
+
+    @Override
+    public Object attribute(final String name) {
+        return requestResponseContext.getAttribute(name);
+    }
+
+    @Override
+    public void attribute(final String name, final Object obj) {
+        requestResponseContext.setAttribute(name, obj);
     }
 
 }

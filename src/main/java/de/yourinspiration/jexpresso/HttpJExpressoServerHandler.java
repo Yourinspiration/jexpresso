@@ -59,7 +59,7 @@ import com.google.common.cache.LoadingCache;
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 import de.yourinspiration.jexpresso.exception.HttpStatusException;
 import de.yourinspiration.jexpresso.http.ContentType;
-import de.yourinspiration.jexpresso.template.TemplateEngine;
+import de.yourinspiration.jexpresso.http.HttpStatus;
 import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
 import de.yourinspiration.jexpresso.transformer.JsonTransformer;
 import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
@@ -84,8 +84,8 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
     private final boolean useFileCache;
     private final Map<String, TemplateEngine> templateEngines;
 
-    private RequestImpl sparkleRequest;
-    private ResponseImpl sparkleResponse;
+    private RequestImpl requestImpl;
+    private ResponseImpl responseImpl;
 
     protected HttpJExpressoServerHandler(final List<Route> routes,
             final List<ExceptionHandlerEntry> exceptionHandlerEntries, final String staticResources,
@@ -108,19 +108,19 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
     protected void channelRead0(final ChannelHandlerContext ctx, final FullHttpRequest request) {
         Attribute<RequestResponseContext> attr = ctx.channel().attr(RequestResponseContext.ATTR_KEY);
 
-        sparkleRequest = new RequestImpl(request, attr.get());
+        requestImpl = new RequestImpl(request, attr.get());
 
         // The response object is created by the MiddlewareChannelHandler.
-        sparkleResponse = attr.get().getResponse();
+        responseImpl = attr.get().getResponse();
 
-        final FullHttpResponse response = sparkleResponse.fullHttpReponse();
+        final FullHttpResponse response = responseImpl.fullHttpReponse();
 
         try {
             // Returns true when the path matched a static resource.
             if (!sendStaticFile(ctx, request, response)) {
                 // Returns false when no route matched the request path
                 // and method.
-                if (!findAndCallRoute(sparkleRequest, sparkleResponse)) {
+                if (!findAndCallRoute(requestImpl, responseImpl)) {
                     // Send 404 to the client because no route or static
                     // resource matched the request.
                     sendError(ctx, NOT_FOUND);
@@ -167,9 +167,9 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
             Logger.debug("Invoked custom exception handler {0} for exception {1}", entry.toString(), e.getClass()
                     .getName());
 
-            sparkleRequest.setRoute(route);
+            requestImpl.setRoute(route);
             entry.invokeHandler(request, response);
-            final Object model = sparkleResponse.getContent();
+            final Object model = responseImpl.getContent();
 
             if (model != null) {
                 final String renderedModel = new PlainTextTransformer().render(model);
@@ -213,7 +213,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
      * @throws IOException
      */
     private boolean findAndCallRoute(final RequestImpl request, final ResponseImpl response) throws IOException {
-        final String path = request.uri();
+        final String path = request.path();
         final HttpMethod method = request.method();
 
         boolean routeFound = false;
@@ -223,46 +223,22 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
             if (route.matchesPathAndMethod(path, method)) {
                 Logger.debug("Found matching route {0}", route);
 
-                sparkleRequest.setRoute(route);
+                request.setRoute(route);
 
                 try {
-                    route.handle(sparkleRequest, sparkleResponse);
+                    route.handle(request, response);
                     response.fullHttpReponse().headers().set(CONTENT_TYPE, response.type());
 
                     String renderedModel;
 
                     if (response.isTemplate()) {
-                        final String ext = response.getTemplate().indexOf(".") > -1 ? response.getTemplate().substring(
-                                response.getTemplate().indexOf(".") + 1) : null;
-                        if (ext == null) {
-                            throw new RuntimeException("template file must contain a file extension");
-                        }
-                        final TemplateEngine templateEngine = templateEngines.get(ext);
-                        if (templateEngine == null) {
-                            throw new RuntimeException("no template engine registered for extension " + ext);
-                        }
-                        renderedModel = templateEngine.render(
-                                response.getTemplate().substring(0, response.getTemplate().indexOf(".")),
-                                response.getOptions());
+                        renderedModel = renderTemplate(response);
                     } else {
-                        final Object model = sparkleResponse.getContent();
+                        final Object model = response.getContent();
 
                         Logger.debug("Route model created {0}", model);
 
-                        switch (response.type()) {
-                        case "application/json":
-                            renderedModel = new JsonTransformer().render(model);
-                            break;
-                        case "text/html":
-                            renderedModel = new HtmlTransformer().render(model);
-                            break;
-                        case "text/plain":
-                            renderedModel = new PlainTextTransformer().render(model);
-                            break;
-                        default:
-                            renderedModel = new PlainTextTransformer().render(model);
-                            break;
-                        }
+                        renderedModel = renderModel(response, model);
 
                         Logger.debug("Rendered model {0}", renderedModel);
                     }
@@ -283,6 +259,41 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         }
 
         return routeFound;
+    }
+
+    private String renderTemplate(final ResponseImpl response) {
+        String renderedModel;
+        final String ext = response.getTemplate().indexOf(".") > -1 ? response.getTemplate().substring(
+                response.getTemplate().indexOf(".") + 1) : null;
+        if (ext == null) {
+            throw new RuntimeException("template file must contain a file extension");
+        }
+        final TemplateEngine templateEngine = templateEngines.get(ext);
+        if (templateEngine == null) {
+            throw new RuntimeException("no template engine registered for extension " + ext);
+        }
+        renderedModel = templateEngine.render(response.getTemplate().substring(0, response.getTemplate().indexOf(".")),
+                response.getOptions());
+        return renderedModel;
+    }
+
+    private String renderModel(final ResponseImpl response, final Object model) {
+        String renderedModel;
+        switch (response.type()) {
+        case "application/json":
+            renderedModel = new JsonTransformer().render(model);
+            break;
+        case "text/html":
+            renderedModel = new HtmlTransformer().render(model);
+            break;
+        case "text/plain":
+            renderedModel = new PlainTextTransformer().render(model);
+            break;
+        default:
+            renderedModel = new PlainTextTransformer().render(model);
+            break;
+        }
+        return renderedModel;
     }
 
     /**
@@ -525,10 +536,9 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
 
         Logger.debug("Caught HTTP Status Exception {0}", hse.getStatus());
 
-        response.status(HttpResponseStatus.valueOf(hse.getStatus()).code());
+        response.status(HttpStatus.valueOf(hse.getStatus()));
         response.fullHttpReponse().headers().set(CONTENT_TYPE, ContentType.TEXT_PLAIN.type());
 
         response.fullHttpReponse().content().writeBytes(hse.getMessage().getBytes());
     }
-
 }

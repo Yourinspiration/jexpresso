@@ -14,7 +14,6 @@ import java.util.Map;
 import com.google.common.cache.LoadingCache;
 
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
-import de.yourinspiration.jexpresso.template.TemplateEngine;
 
 /**
  * Netty channel initializer.

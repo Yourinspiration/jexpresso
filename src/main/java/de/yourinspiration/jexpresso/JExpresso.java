@@ -4,8 +4,12 @@ import io.netty.handler.codec.http.HttpMethod;
 
 import org.pmw.tinylog.Logger;
 
-import de.yourinspiration.jexpresso.template.TemplateEngine;
-
+/**
+ * Provides the API for a JExpresso web application.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class JExpresso {
 
     private final JExpressoBase base;

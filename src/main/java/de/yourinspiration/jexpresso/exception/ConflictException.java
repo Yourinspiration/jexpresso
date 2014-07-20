@@ -1,5 +1,11 @@
 package de.yourinspiration.jexpresso.exception;
 
+/**
+ * Represents a HTTP 409 status.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class ConflictException extends HttpStatusException {
 
     private static final long serialVersionUID = 3402243537072618740L;

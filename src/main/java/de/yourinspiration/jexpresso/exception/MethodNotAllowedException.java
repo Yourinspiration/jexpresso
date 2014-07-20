@@ -1,5 +1,11 @@
 package de.yourinspiration.jexpresso.exception;
 
+/**
+ * Represents a HTTP 405 status.
+ * 
+ * @author Marcel Härle
+ *
+ */
 public class MethodNotAllowedException extends HttpStatusException {
 
     private static final long serialVersionUID = 7209209316987049325L;
