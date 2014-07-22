@@ -1,10 +1,6 @@
 package de.yourinspiration.jexpresso;
 
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,8 +8,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.Attribute;
 import io.netty.util.CharsetUtil;
 
@@ -79,7 +77,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
             if (!findAndCallRoute(requestImpl, responseImpl)) {
                 // Send 404 to the client because no route or static
                 // resource matched the request.
-                sendError(ctx, NOT_FOUND);
+                sendError(ctx, HttpResponseStatus.NOT_FOUND);
             }
 
             ctx.write(response);
@@ -90,7 +88,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         } catch (final Exception e) {
             Logger.error("Error processing HTTP content: {0}", e.getMessage());
             e.printStackTrace();
-            sendError(ctx, INTERNAL_SERVER_ERROR);
+            sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -182,7 +180,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
 
                 try {
                     route.handle(request, response);
-                    response.fullHttpReponse().headers().set(CONTENT_TYPE, response.type());
+                    response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_TYPE, response.type());
 
                     String renderedModel;
 
@@ -252,9 +250,9 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
     }
 
     private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status, Unpooled.copiedBuffer("Failure: "
-                + status + "\r\n", CharsetUtil.UTF_8));
-        response.headers().set(CONTENT_TYPE, "text/plain; charset=UTF-8");
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(
+                "Failure: " + status + "\r\n", CharsetUtil.UTF_8));
+        response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
 
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
@@ -266,7 +264,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         Logger.debug("Caught HTTP Status Exception {0}", hse.getStatus());
 
         response.status(HttpStatus.valueOf(hse.getStatus()));
-        response.fullHttpReponse().headers().set(CONTENT_TYPE, ContentType.TEXT_PLAIN.type());
+        response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_TYPE, ContentType.TEXT_PLAIN.type());
 
         response.fullHttpReponse().content().writeBytes(hse.getMessage().getBytes());
     }
