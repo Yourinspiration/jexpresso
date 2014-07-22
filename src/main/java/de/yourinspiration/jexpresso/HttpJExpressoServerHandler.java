@@ -1,19 +1,9 @@
 package de.yourinspiration.jexpresso;
 
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
-import static io.netty.handler.codec.http.HttpHeaders.setContentLength;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CACHE_CONTROL;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.DATE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.EXPIRES;
-import static io.netty.handler.codec.http.HttpHeaders.Names.IF_MODIFIED_SINCE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.LAST_MODIFIED;
-import static io.netty.handler.codec.http.HttpMethod.GET;
-import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
 import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_MODIFIED;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -22,39 +12,16 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.Attribute;
 import io.netty.util.CharsetUtil;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
-import javax.activation.MimetypesFileTypeMap;
-
-import org.apache.commons.io.IOUtils;
-import org.eclipse.jetty.util.resource.Resource;
 import org.pmw.tinylog.Logger;
-
-import com.google.common.cache.LoadingCache;
 
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 import de.yourinspiration.jexpresso.exception.HttpStatusException;
@@ -75,27 +42,18 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     public static final int HTTP_CACHE_SECONDS = 60;
-    private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
 
     private final List<Route> routes;
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries;
-    private final String staticResources;
-    private final LoadingCache<String, FileCacheEntry> fileCache;
-    private final boolean useFileCache;
     private final Map<String, TemplateEngine> templateEngines;
 
     private RequestImpl requestImpl;
     private ResponseImpl responseImpl;
 
     protected HttpJExpressoServerHandler(final List<Route> routes,
-            final List<ExceptionHandlerEntry> exceptionHandlerEntries, final String staticResources,
-            final LoadingCache<String, FileCacheEntry> fileCache, final boolean useFileCache,
-            final Map<String, TemplateEngine> templateEngines) {
+            final List<ExceptionHandlerEntry> exceptionHandlerEntries, final Map<String, TemplateEngine> templateEngines) {
         this.routes = routes;
         this.exceptionHandlerEntries = exceptionHandlerEntries;
-        this.staticResources = staticResources;
-        this.fileCache = fileCache;
-        this.useFileCache = useFileCache;
         this.templateEngines = templateEngines;
     }
 
@@ -116,15 +74,12 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         final FullHttpResponse response = responseImpl.fullHttpReponse();
 
         try {
-            // Returns true when the path matched a static resource.
-            if (!sendStaticFile(ctx, request, response)) {
-                // Returns false when no route matched the request path
-                // and method.
-                if (!findAndCallRoute(requestImpl, responseImpl)) {
-                    // Send 404 to the client because no route or static
-                    // resource matched the request.
-                    sendError(ctx, NOT_FOUND);
-                }
+            // Returns false when no route matched the request path
+            // and method.
+            if (!findAndCallRoute(requestImpl, responseImpl)) {
+                // Send 404 to the client because no route or static
+                // resource matched the request.
+                sendError(ctx, NOT_FOUND);
             }
 
             ctx.write(response);
@@ -296,166 +251,6 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         return renderedModel;
     }
 
-    /**
-     * Try to find a static resource and send it to the client.
-     * 
-     * @param ctx
-     *            the current context
-     * @param request
-     *            the current request
-     * @param response
-     *            the current response
-     * @return returns <code>true</code> if a static resource was found and
-     *         sent, otherwise <code>false</code>
-     * @throws IOException
-     * @throws ParseException
-     * @throws URISyntaxException
-     */
-    private boolean sendStaticFile(final ChannelHandlerContext ctx, final FullHttpRequest request,
-            final FullHttpResponse response) throws IOException, ParseException, URISyntaxException {
-        // Files can only by requested by a HTTP GET request.
-        if (!request.getMethod().equals(GET)) {
-            return false;
-        }
-
-        final String uri = request.getUri();
-        String path = sanitizeUri(uri);
-
-        // If the path is not valid/secure it is set to null.
-        if (path == null) {
-            sendError(ctx, FORBIDDEN);
-            return true;
-        }
-
-        if (path.equals("") || path.endsWith("/")) {
-            path += "index.html";
-        }
-
-        String resource = "";
-        if (staticResources.equals("")) {
-            resource = path;
-        } else if (staticResources.endsWith("/")) {
-            resource = staticResources + path;
-        } else {
-            resource = staticResources + "/" + path;
-        }
-
-        if (useFileCache) {
-            try {
-                FileCacheEntry fileCacheEntry = fileCache.get(resource);
-
-                if (fileCacheEntry.isDirectory()) {
-                    sendError(ctx, FORBIDDEN);
-                    return true;
-                }
-
-                if (fileCacheEntry.isFound()) {
-                    if (checkIfModified(request, fileCacheEntry.lastModified())) {
-                        sendNotModified(ctx);
-                        return true;
-                    } else {
-                        setContentLength(response, fileCacheEntry.getBytes().length);
-                        setContentTypeHeader(response, fileCacheEntry.getPath());
-                        setDateAndCacheHeaders(response, fileCacheEntry.lastModified());
-                        if (isKeepAlive(request)) {
-                            response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-                        }
-
-                        response.content().writeBytes(fileCacheEntry.getBytes());
-                    }
-                } else {
-                    return false;
-                }
-            } catch (ExecutionException e) {
-                Logger.error("Error getting file from file cache: {0}", e.getMessage());
-                return false;
-            }
-        } else {
-            // Lookup the classpath for the requested resource.
-            final URL fileUrl = getClass().getResource("/" + resource);
-
-            // null will be returned when there is no such resource on the
-            // classpath.
-            if (fileUrl == null) {
-                return false;
-            }
-
-            final Resource fileResource = Resource.newResource(fileUrl);
-
-            if (!fileResource.exists()) {
-                return false;
-            }
-
-            if (fileResource.isDirectory()) {
-                sendError(ctx, FORBIDDEN);
-                return true;
-            }
-
-            final InputStream fileInputStream = fileUrl.openStream();
-
-            byte[] bytes;
-
-            // Somehow there is a NPE when accessing a directory when compressed
-            // to a JAR.
-            try {
-                bytes = IOUtils.toByteArray(fileInputStream);
-            } catch (NullPointerException npe) {
-                sendError(ctx, NOT_FOUND);
-                return true;
-            } finally {
-                fileInputStream.close();
-            }
-
-            fileInputStream.close();
-
-            setContentLength(response, bytes.length);
-            setContentTypeHeader(response, resource);
-            setDateAndCacheHeaders(response, System.currentTimeMillis());
-            if (isKeepAlive(request)) {
-                response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-            }
-
-            response.content().writeBytes(bytes);
-        }
-
-        return true;
-    }
-
-    private boolean checkIfModified(final FullHttpRequest request, final long lastModified) throws ParseException {
-        String ifModifiedSince = request.headers().get(IF_MODIFIED_SINCE);
-        if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
-            SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
-            Date ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince);
-            long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
-            long fileLastModifiedSeconds = lastModified / 1000;
-            if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private String sanitizeUri(String uri) {
-        // Decode the path.
-        try {
-            uri = URLDecoder.decode(uri, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new Error(e);
-        }
-
-        if (!uri.startsWith("/")) {
-            return null;
-        }
-
-        // TODO Check path seriously!
-        if (uri.contains(File.separator + '.') || uri.contains('.' + File.separator) || uri.startsWith(".")
-                || uri.endsWith(".") || INSECURE_URI.matcher(uri).matches()) {
-            return null;
-        }
-
-        return uri.substring(1);
-    }
-
     private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status, Unpooled.copiedBuffer("Failure: "
                 + status + "\r\n", CharsetUtil.UTF_8));
@@ -463,72 +258,6 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
 
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-    }
-
-    /**
-     * When file timestamp is the same as what the browser is sending up, send a
-     * "304 Not Modified"
-     *
-     * @param ctx
-     *            Context
-     */
-    private void sendNotModified(ChannelHandlerContext ctx) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED);
-        setDateHeader(response);
-
-        // Close the connection as soon as the error message is sent.
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-    }
-
-    /**
-     * Sets the Date header for the HTTP response
-     *
-     * @param response
-     *            HTTP response
-     */
-    private void setDateHeader(FullHttpResponse response) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
-        dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
-
-        Calendar time = new GregorianCalendar();
-        response.headers().set(DATE, dateFormatter.format(time.getTime()));
-    }
-
-    /**
-     * Sets the Date and Cache headers for the HTTP Response
-     *
-     * @param response
-     *            HTTP response
-     * @param last
-     *            modified time of fileToCache last modified time of file to
-     *            extract content type
-     */
-    private void setDateAndCacheHeaders(final HttpResponse response, final long lastModified) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
-        dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
-
-        // Date header
-        Calendar time = new GregorianCalendar();
-        response.headers().set(DATE, dateFormatter.format(time.getTime()));
-
-        // Add cache headers
-        time.add(Calendar.SECOND, HTTP_CACHE_SECONDS);
-        response.headers().set(EXPIRES, dateFormatter.format(time.getTime()));
-        response.headers().set(CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
-        response.headers().set(LAST_MODIFIED, dateFormatter.format(new Date(lastModified)));
-    }
-
-    /**
-     * Sets the content type header for the HTTP Response
-     *
-     * @param response
-     *            HTTP response
-     * @param file
-     *            file to extract content type
-     */
-    private void setContentTypeHeader(final HttpResponse response, final String path) {
-        MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
-        response.headers().set(CONTENT_TYPE, mimeTypesMap.getContentType(path));
     }
 
     private void handleHttpStatusException(final ResponseImpl response, final Exception e) throws IOException {

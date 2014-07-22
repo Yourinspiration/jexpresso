@@ -52,10 +52,6 @@ public class RequestImpl implements Request {
         return fullHttpRequest;
     }
 
-    protected HttpMethod method() {
-        return fullHttpRequest.getMethod();
-    }
-
     protected RequestResponseContext context() {
         return requestResponseContext;
     }
@@ -249,6 +245,11 @@ public class RequestImpl implements Request {
     @Override
     public void attribute(final String name, final Object obj) {
         requestResponseContext.setAttribute(name, obj);
+    }
+
+    @Override
+    public HttpMethod method() {
+        return fullHttpRequest.getMethod();
     }
 
 }

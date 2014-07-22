@@ -134,17 +134,6 @@ public class JExpresso {
     }
 
     /**
-     * Sets the static resource location. Must not be called after the server is
-     * started.
-     * 
-     * @param staticResources
-     *            the static resource location
-     */
-    public void staticResources(final String staticResources) {
-        base.staticResources = staticResources;
-    }
-
-    /**
      * Register a custom exception handler, that is called when the given class
      * of exception is thrown during the request processing.
      * 
@@ -155,27 +144,6 @@ public class JExpresso {
      */
     public void exception(final Class<? extends Exception> exceptionClass, final RouteHandler routeHandler) {
         base.addExceptionHandler(exceptionClass, routeHandler);
-    }
-
-    /**
-     * Whether to use the file cache for static resources.
-     * 
-     * @param useFileCache
-     *            <code>true</code> if a file cache should be used, otherwise
-     *            <code>false</code>
-     */
-    public void useFileCache(final boolean useFileCache) {
-        base.useFileCache(useFileCache);
-    }
-
-    /**
-     * Whether the server is using a file cache for static resources.
-     * 
-     * @return returns <code>true</code> when the server is using a file cache,
-     *         otherwise <code>false</code>
-     */
-    public boolean isUsingFileCache() {
-        return base.isUsingFileCache();
     }
 
     /**

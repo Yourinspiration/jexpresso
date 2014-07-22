@@ -13,9 +13,6 @@ import java.util.Map;
 
 import org.pmw.tinylog.Logger;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.LoadingCache;
-
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 
 /**
@@ -31,14 +28,9 @@ public class JExpressoBase {
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries = new ArrayList<>();
     private final Map<String, TemplateEngine> templateEngines = new HashMap<>();
 
-    private final LoadingCache<String, FileCacheEntry> fileCache = CacheBuilder.newBuilder().build(
-            new FileCacheLoader());
-    private boolean useFileCache = true;
-
     private List<MiddlewareHandler> middlewareHandlers = new ArrayList<>();
 
     protected boolean started = false;
-    protected String staticResources = "assets";
 
     protected JExpressoBase() {
     }
@@ -56,8 +48,7 @@ public class JExpressoBase {
                             .channel(NioServerSocketChannel.class)
                             .childHandler(
                                     new HttpJExpressoServerInitializer(routes, exceptionHandlerEntries,
-                                            staticResources, fileCache, useFileCache, middlewareHandlers,
-                                            templateEngines));
+                                            middlewareHandlers, templateEngines));
 
                     Channel ch = b.bind(port).sync().channel();
                     ch.closeFuture().sync();
@@ -86,14 +77,6 @@ public class JExpressoBase {
 
     protected void addExceptionHandler(Class<? extends Exception> exceptionClass, final RouteHandler routeHandler) {
         exceptionHandlerEntries.add(new ExceptionHandlerEntry(exceptionClass, routeHandler));
-    }
-
-    protected void useFileCache(final boolean useFileCache) {
-        this.useFileCache = useFileCache;
-    }
-
-    protected boolean isUsingFileCache() {
-        return useFileCache;
     }
 
     protected void addMiddleware(final MiddlewareHandler handler) {

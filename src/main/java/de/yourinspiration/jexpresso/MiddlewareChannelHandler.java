@@ -72,7 +72,7 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
      *            the index of the current finished handler
      */
     protected void next(final int currentIndex) {
-        if (currentIndex < handlers.size()) {
+        if (currentIndex < handlers.size() - 1) {
             final NextImpl next = new NextImpl(currentIndex + 1, this);
             final MiddlewareHandler handler = handlers.get(currentIndex + 1);
             handler.handle(requestImpl, responseImpl, next);

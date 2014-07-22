@@ -1,6 +1,7 @@
 package de.yourinspiration.jexpresso;
 
 import io.netty.handler.codec.http.Cookie;
+import io.netty.handler.codec.http.HttpMethod;
 
 import java.util.List;
 import java.util.Map;
@@ -223,5 +224,12 @@ public interface Request {
      *            the value of the attribute
      */
     void attribute(final String name, Object attr);
+
+    /**
+     * Get the HTTP method.
+     * 
+     * @return the HTTP method
+     */
+    HttpMethod method();
 
 }
