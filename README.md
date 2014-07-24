@@ -27,7 +27,7 @@ public class App {
     });
     
     app.listen(3333, () -> {
-      System.out.println("Server listens on port 3333");
+      System.out.println("Listening on port 3333");
     });
   }
   
@@ -37,4 +37,19 @@ public class App {
   }
   
 }
+```
+
+Compare to expressjs
+
+```javascript
+var express = require('express');
+var app = express();
+
+app.get('/hello', function(req, res){
+  res.send('<h1>Hello World!</h1>');
+});
+
+app.listen(3333, function() {
+    console.log('Listening on port 3333');
+});
 ```
