@@ -53,3 +53,24 @@ app.listen(3333, function() {
     console.log('Listening on port 3333');
 });
 ```
+
+## Maven
+
+Add this to your repositories
+
+```xml
+<repository>
+  <id>nexus.yourinspiration.de</id>
+  <url>http://nexus.yourinspiration.de/nexus/content/repositories/releases/</url>
+</repository>
+```
+
+Add this dependency to your pom
+
+```xml
+<dependency>
+  <groupId>de.yourinspiration</groupId>
+  <artifactId>jexpresso</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
