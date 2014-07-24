@@ -55,7 +55,7 @@ public class ResponseImpl implements Response {
         return isTemplate;
     }
 
-    protected boolean isBinafy() {
+    protected boolean isBinary() {
         return isBinary;
     }
 
@@ -138,6 +138,7 @@ public class ResponseImpl implements Response {
     @Override
     public void send(final byte[] content) {
         this.bytes = content;
+        this.isBinary = true;
         type(ContentType.APPLICATION_OCTETSTREAM.type());
     }
 

@@ -12,16 +12,6 @@ public abstract class HttpStatusException extends RuntimeException {
 
     private final int status;
 
-    public HttpStatusException(final int status) {
-        super();
-        this.status = status;
-    }
-
-    public HttpStatusException(final int status, final Throwable cause) {
-        super(cause);
-        this.status = status;
-    }
-
     public HttpStatusException(final int status, final String msg) {
         super(msg);
         this.status = status;

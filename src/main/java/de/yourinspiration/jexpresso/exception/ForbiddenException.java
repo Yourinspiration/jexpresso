@@ -10,8 +10,8 @@ public class ForbiddenException extends HttpStatusException {
 
     private static final long serialVersionUID = 1107196534826049580L;
 
-    private static final int STATUS = 403;
-    private static final String DEFAULT_MSG = "Forbidden";
+    public static final int STATUS = 403;
+    public static final String DEFAULT_MSG = "Forbidden";
 
     public ForbiddenException() {
         super(STATUS, DEFAULT_MSG);

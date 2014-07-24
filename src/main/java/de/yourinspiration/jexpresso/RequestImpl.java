@@ -1,6 +1,5 @@
 package de.yourinspiration.jexpresso;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.ACCEPT;
 import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 import io.netty.handler.codec.http.Cookie;
@@ -62,11 +61,7 @@ public class RequestImpl implements Request {
 
     @Override
     public String body() {
-        final StringBuilder body = new StringBuilder();
-        if (fullHttpRequest.content().isReadable()) {
-            body.append(fullHttpRequest.content().toString(CharsetUtil.UTF_8));
-        }
-        return body.toString();
+        return fullHttpRequest.content().toString(CharsetUtil.UTF_8);
     }
 
     @Override
@@ -87,7 +82,9 @@ public class RequestImpl implements Request {
         final String[] pathTokens = route.getPath().split("/");
 
         for (int i = 0, l = pathTokens.length; i < l; i++) {
-            params.put(pathTokens[i], currentPathTokens[i]);
+            if (pathTokens[i].startsWith(":")) {
+                params.put(pathTokens[i].replace(":", ""), currentPathTokens[i]);
+            }
         }
 
         return params;
@@ -158,7 +155,7 @@ public class RequestImpl implements Request {
 
     @Override
     public Cookie cookie(final String name) {
-        String cookieString = fullHttpRequest.headers().get(COOKIE);
+        final String cookieString = fullHttpRequest.headers().get(COOKIE);
         if (cookieString != null) {
             Set<Cookie> cookies = CookieDecoder.decode(cookieString);
             for (Cookie cookie : cookies) {
@@ -171,28 +168,27 @@ public class RequestImpl implements Request {
     }
 
     @Override
-    public String get(String field) {
+    public String get(final String field) {
         return fullHttpRequest.headers().get(field);
     }
 
     @Override
-    public String accepts(String... types) {
-        fullHttpRequest.headers().get(ACCEPT);
-        return null;
-    }
-
-    @Override
-    public String acceptsCharset(String... charsets) {
+    public String accepts(final String... types) {
         throw new RuntimeException("not implemented yet");
     }
 
     @Override
-    public String acceptsLanguage(String... lang) {
+    public String acceptsCharset(final String... charsets) {
         throw new RuntimeException("not implemented yet");
     }
 
     @Override
-    public boolean is(String type) {
+    public String acceptsLanguage(final String... lang) {
+        throw new RuntimeException("not implemented yet");
+    }
+
+    @Override
+    public boolean is(final String type) {
         throw new RuntimeException("not implemented yet");
     }
 

@@ -138,8 +138,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<optimize>true</optimize>
 					<debug>true</debug>
 				</configuration>
@@ -162,6 +162,35 @@
 							<goal>cpd-check</goal>
 						</goals>
 						<phase>test</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<instrumentation>
+						<excludes>
+							<exclude>de/yourinspiration/jexpresso/JExpressoBase*.class</exclude>
+						</excludes>
+					</instrumentation>
+					<check>
+						<branchRate>75</branchRate>
+						<lineRate>75</lineRate>
+						<haltOnFailure>true</haltOnFailure>
+						<totalBranchRate>75</totalBranchRate>
+						<totalLineRate>75</totalLineRate>
+						<packageLineRate>75</packageLineRate>
+						<packageBranchRate>75</packageBranchRate>
+					</check>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+							<goal>check</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

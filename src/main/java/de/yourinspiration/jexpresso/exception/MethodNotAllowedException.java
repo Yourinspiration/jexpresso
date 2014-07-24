@@ -10,8 +10,8 @@ public class MethodNotAllowedException extends HttpStatusException {
 
     private static final long serialVersionUID = 7209209316987049325L;
 
-    private static final int STATUS = 405;
-    private static final String DEFAULT_MSG = "Method not allowed";
+    public static final int STATUS = 405;
+    public static final String DEFAULT_MSG = "Method not allowed";
 
     public MethodNotAllowedException() {
         super(STATUS, DEFAULT_MSG);

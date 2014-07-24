@@ -10,8 +10,8 @@ public class ConflictException extends HttpStatusException {
 
     private static final long serialVersionUID = 3402243537072618740L;
 
-    private static final int STATUS = 409;
-    private static final String DEFAULT_MSG = "Conflict";
+    public static final int STATUS = 409;
+    public static final String DEFAULT_MSG = "Conflict";
 
     public ConflictException() {
         super(STATUS, DEFAULT_MSG);

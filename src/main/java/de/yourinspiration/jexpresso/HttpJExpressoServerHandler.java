@@ -61,7 +61,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
     }
 
     @Override
-    protected void channelRead0(final ChannelHandlerContext ctx, final FullHttpRequest request) {
+    protected void channelRead0(final ChannelHandlerContext ctx, final FullHttpRequest request) throws Exception {
         Attribute<RequestResponseContext> attr = ctx.channel().attr(RequestResponseContext.ATTR_KEY);
 
         requestImpl = new RequestImpl(request, attr.get());
@@ -71,24 +71,18 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
 
         final FullHttpResponse response = responseImpl.fullHttpReponse();
 
-        try {
-            // Returns false when no route matched the request path
-            // and method.
-            if (!findAndCallRoute(requestImpl, responseImpl)) {
-                // Send 404 to the client because no route or static
-                // resource matched the request.
-                sendError(ctx, HttpResponseStatus.NOT_FOUND);
-            }
+        // Returns false when no route matched the request path
+        // and method.
+        if (!findAndCallRoute(requestImpl, responseImpl)) {
+            // Send 404 to the client because no route or static
+            // resource matched the request.
+            sendError(ctx, HttpResponseStatus.NOT_FOUND);
+        }
 
-            ctx.write(response);
+        ctx.write(response);
 
-            if (!isKeepAlive(request)) {
-                ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-            }
-        } catch (final Exception e) {
-            Logger.error("Error processing HTTP content: {0}", e.getMessage());
-            e.printStackTrace();
-            sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        if (!isKeepAlive(request)) {
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         }
     }
 
@@ -124,13 +118,11 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
             entry.invokeHandler(request, response);
             final Object model = responseImpl.getContent();
 
-            if (model != null) {
-                final String renderedModel = new PlainTextTransformer().render(model);
+            final String renderedModel = new PlainTextTransformer().render(model);
 
-                Logger.debug("Rendered model {0}", renderedModel);
+            Logger.debug("Rendered model {0}", renderedModel);
 
-                response.fullHttpReponse().content().writeBytes(renderedModel.getBytes());
-            }
+            response.fullHttpReponse().content().writeBytes(renderedModel.getBytes());
         } else {
             Logger.debug("No custom exception handler found for exception {0}", e.getClass().getName());
             throw new RuntimeException(e);
@@ -238,9 +230,6 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
             break;
         case "text/html":
             renderedModel = new HtmlTransformer().render(model);
-            break;
-        case "text/plain":
-            renderedModel = new PlainTextTransformer().render(model);
             break;
         default:
             renderedModel = new PlainTextTransformer().render(model);

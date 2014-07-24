@@ -10,8 +10,8 @@ public class NotAcceptableException extends HttpStatusException {
 
     private static final long serialVersionUID = -4487720404831554702L;
 
-    private static final int STATUS = 406;
-    private static final String DEFAULT_MSG = "Not acceptable";
+    public static final int STATUS = 406;
+    public static final String DEFAULT_MSG = "Not acceptable";
 
     public NotAcceptableException() {
         super(STATUS, DEFAULT_MSG);

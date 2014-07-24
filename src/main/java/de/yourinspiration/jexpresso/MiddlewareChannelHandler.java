@@ -31,9 +31,9 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
 
     private final List<MiddlewareHandler> handlers;
 
-    private ChannelHandlerContext ctx;
-    private RequestImpl requestImpl;
-    private ResponseImpl responseImpl;
+    protected ChannelHandlerContext ctx;
+    protected RequestImpl requestImpl;
+    protected ResponseImpl responseImpl;
 
     protected MiddlewareChannelHandler(final List<MiddlewareHandler> handlers) {
         this.handlers = handlers;
@@ -42,6 +42,7 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
     @Override
     protected void channelRead0(final ChannelHandlerContext ctx, final FullHttpRequest request) throws Exception {
         this.ctx = ctx;
+
         // Create both the FullHttpResponse and Response, so that the middleware
         // and the final routes operate on the some data.
         final FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
@@ -84,6 +85,9 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
         }
     }
 
+    /**
+     * Cancel the request-response-chain and respond immediately to the client.
+     */
     protected void cancel() {
         responseImpl.fullHttpReponse().headers().set(CONTENT_TYPE, responseImpl.type());
 
@@ -99,9 +103,6 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
             break;
         case "text/html":
             renderedModel = new HtmlTransformer().render(model);
-            break;
-        case "text/plain":
-            renderedModel = new PlainTextTransformer().render(model);
             break;
         default:
             renderedModel = new PlainTextTransformer().render(model);

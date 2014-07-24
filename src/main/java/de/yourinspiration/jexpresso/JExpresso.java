@@ -21,6 +21,10 @@ public class JExpresso {
         base = new JExpressoBase();
     }
 
+    protected JExpresso(final JExpressoBase base) {
+        this.base = base;
+    }
+
     /**
      * Register the given callback handler for a GET request on the given path.
      * 

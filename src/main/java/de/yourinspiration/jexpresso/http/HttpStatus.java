@@ -499,15 +499,6 @@ public enum HttpStatus {
     }
 
     /**
-     * Returns the HTTP status series of this status code.
-     * 
-     * @see HttpStatus.Series
-     */
-    public Series series() {
-        return Series.valueOf(this);
-    }
-
-    /**
      * Return a string representation of this status code.
      */
     @Override
@@ -531,40 +522,6 @@ public enum HttpStatus {
             }
         }
         throw new IllegalArgumentException("No matching constant for [" + statusCode + "]");
-    }
-
-    /**
-     * Java 5 enumeration of HTTP status series.
-     * <p>
-     * Retrievable via {@link HttpStatus#series()}.
-     */
-    public static enum Series {
-
-        INFORMATIONAL(1), SUCCESSFUL(2), REDIRECTION(3), CLIENT_ERROR(4), SERVER_ERROR(5);
-
-        private final int value;
-
-        private Series(int value) {
-            this.value = value;
-        }
-
-        /**
-         * Return the integer value of this status series. Ranges from 1 to 5.
-         */
-        public int value() {
-            return this.value;
-        }
-
-        private static Series valueOf(HttpStatus status) {
-            int seriesCode = status.value() / 100;
-            for (Series series : values()) {
-                if (series.value == seriesCode) {
-                    return series;
-                }
-            }
-            throw new IllegalArgumentException("No matching constant for [" + status + "]");
-        }
-
     }
 
 }

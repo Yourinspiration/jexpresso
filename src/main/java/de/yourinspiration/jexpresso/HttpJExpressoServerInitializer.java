@@ -21,10 +21,11 @@ import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
  */
 public class HttpJExpressoServerInitializer extends ChannelInitializer<Channel> {
 
+    public static final int MAX_CONTENT_LENGTH = 1048576;
+
     private final List<Route> routes;
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries;
     private final Map<String, TemplateEngine> templateEngines;
-
     private final List<MiddlewareHandler> middlewareHandlers;
 
     protected HttpJExpressoServerInitializer(final List<Route> routes,
@@ -38,9 +39,9 @@ public class HttpJExpressoServerInitializer extends ChannelInitializer<Channel> 
 
     @Override
     protected void initChannel(final Channel ch) throws Exception {
-        ChannelPipeline p = ch.pipeline();
+        final ChannelPipeline p = ch.pipeline();
         p.addLast(new HttpRequestDecoder());
-        p.addLast(new HttpObjectAggregator(1048576));
+        p.addLast(new HttpObjectAggregator(MAX_CONTENT_LENGTH));
         p.addLast(new HttpResponseEncoder());
         p.addLast(new HttpContentCompressor());
         p.addLast(new MiddlewareChannelHandler(middlewareHandlers), new HttpJExpressoServerHandler(routes,

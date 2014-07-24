@@ -10,8 +10,8 @@ public class NotFoundException extends HttpStatusException {
 
     private static final long serialVersionUID = -2906328483151240449L;
 
-    private static final int STATUS = 404;
-    private static final String DEFAULT_MSG = "Not found";
+    public static final int STATUS = 404;
+    public static final String DEFAULT_MSG = "Not found";
 
     public NotFoundException() {
         super(STATUS, DEFAULT_MSG);

@@ -13,9 +13,9 @@ import de.yourinspiration.jexpresso.http.ContentType;
  */
 public class JsonTransformer implements ResponseTransformer {
 
-    private static final String NAME = "JsonTransformer";
+    public static final String NAME = "JsonTransformer";
 
-    private final Gson gson = new GsonBuilder().generateNonExecutableJson().create();
+    private final Gson gson = new GsonBuilder().create();
 
     @Override
     public String render(final Object model) {

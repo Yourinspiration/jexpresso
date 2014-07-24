@@ -13,7 +13,7 @@ public class PlainTextTransformer implements ResponseTransformer {
 
     @Override
     public String render(Object model) {
-        return model.toString();
+        return model != null ? model.toString() : "";
     }
 
     @Override
