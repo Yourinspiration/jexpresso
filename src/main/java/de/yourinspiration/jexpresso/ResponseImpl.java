@@ -79,7 +79,7 @@ public class ResponseImpl implements Response {
 
     @Override
     public void set(final String field, final String value) {
-        fullHttpResponse.headers().add(field, value);
+        fullHttpResponse.headers().set(field, value);
     }
 
     @Override

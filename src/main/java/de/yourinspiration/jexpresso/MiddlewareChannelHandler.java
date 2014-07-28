@@ -91,27 +91,31 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
     protected void cancel() {
         responseImpl.fullHttpReponse().headers().set(CONTENT_TYPE, responseImpl.type());
 
-        final Object model = responseImpl.getContent();
+        if (responseImpl.isBinary()) {
+            responseImpl.fullHttpReponse().content().writeBytes(responseImpl.getBytes());
+        } else {
+            final Object model = responseImpl.getContent();
 
-        Logger.debug("Route model created {0}", model);
+            Logger.debug("Route model created {0}", model);
 
-        String renderedModel;
+            String renderedModel;
 
-        switch (responseImpl.type()) {
-        case "application/json":
-            renderedModel = new JsonTransformer().render(model);
-            break;
-        case "text/html":
-            renderedModel = new HtmlTransformer().render(model);
-            break;
-        default:
-            renderedModel = new PlainTextTransformer().render(model);
-            break;
+            switch (responseImpl.type()) {
+            case "application/json":
+                renderedModel = new JsonTransformer().render(model);
+                break;
+            case "text/html":
+                renderedModel = new HtmlTransformer().render(model);
+                break;
+            default:
+                renderedModel = new PlainTextTransformer().render(model);
+                break;
+            }
+
+            Logger.debug("Rendered model {0}", renderedModel);
+
+            responseImpl.fullHttpReponse().content().writeBytes(renderedModel.getBytes());
         }
-
-        Logger.debug("Rendered model {0}", renderedModel);
-
-        responseImpl.fullHttpReponse().content().writeBytes(renderedModel.getBytes());
 
         ctx.writeAndFlush(responseImpl.fullHttpReponse()).addListener(ChannelFutureListener.CLOSE);
     }
