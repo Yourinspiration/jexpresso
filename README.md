@@ -74,3 +74,17 @@ Add this dependency to your pom
   <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
+
+## Middleware
+
+### Session support
+
+[JExpresso Session](https://github.com/Yourinspiration/jexpresso-session)
+
+### Static resources
+
+[JExpresso Static Resources](https://github.com/Yourinspiration/jexpresso-static-resources)
+
+### Basic authentication
+
+[JExpresso Basic Authencation](https://github.com/Yourinspiration/jexpresso-basic-auth)
