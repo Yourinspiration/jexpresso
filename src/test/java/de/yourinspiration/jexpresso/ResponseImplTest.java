@@ -62,7 +62,7 @@ public class ResponseImplTest {
 
         responseImpl.set("key", "value");
 
-        Mockito.verify(headers).add("key", "value");
+        Mockito.verify(headers).set("key", "value");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ResponseImplTest {
 
         responseImpl.set(fields);
 
-        Mockito.verify(headers).add("key", "value");
+        Mockito.verify(headers).set("key", "value");
     }
 
     @Test
@@ -116,7 +116,7 @@ public class ResponseImplTest {
 
         responseImpl.location("location");
 
-        Mockito.verify(headers).add(LOCATION, "location");
+        Mockito.verify(headers).set(LOCATION, "location");
     }
 
     @Test
