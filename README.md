@@ -75,7 +75,7 @@ Add this dependency to your pom
 <dependency>
   <groupId>de.yourinspiration</groupId>
   <artifactId>jexpresso</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1-RELEASE</version>
 </dependency>
 ```
 
