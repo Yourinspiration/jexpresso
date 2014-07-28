@@ -30,6 +30,7 @@ public class RequestImpl implements Request {
     private Route route;
     private final Gson gson;
     private final RequestResponseContext requestResponseContext;
+    private final List<Cookie> customCookies = new ArrayList<>();
 
     protected RequestImpl(final FullHttpRequest fullHttpRequest, final RequestResponseContext requestResponseContext) {
         this(fullHttpRequest, requestResponseContext, null);
@@ -150,11 +151,25 @@ public class RequestImpl implements Request {
                 cookies.add(cookie);
             }
         }
+        for (Cookie cookie : customCookies) {
+            for (int i = 0, l = cookies.size(); i < l; i++) {
+                if (cookies.get(i).getName().equals(cookie.getName())) {
+                    cookies.remove(i);
+                    break;
+                }
+            }
+            cookies.add(cookie);
+        }
         return cookies;
     }
 
     @Override
     public Cookie cookie(final String name) {
+        for (Cookie cookie : customCookies) {
+            if (cookie.getName().equals(name)) {
+                return cookie;
+            }
+        }
         final String cookieString = fullHttpRequest.headers().get(COOKIE);
         if (cookieString != null) {
             Set<Cookie> cookies = CookieDecoder.decode(cookieString);
@@ -165,6 +180,17 @@ public class RequestImpl implements Request {
             }
         }
         return null;
+    }
+
+    @Override
+    public void setCookie(final Cookie cookie) {
+        for (int i = 0, l = customCookies.size(); i < l; i++) {
+            if (customCookies.get(i).getName().equals(cookie.getName())) {
+                customCookies.remove(i);
+                break;
+            }
+        }
+        customCookies.add(cookie);
     }
 
     @Override

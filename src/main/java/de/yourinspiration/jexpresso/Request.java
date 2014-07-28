@@ -88,6 +88,14 @@ public interface Request {
     Cookie cookie(String name);
 
     /**
+     * Set the given cookie. Will overwrite an existing cookie.
+     * 
+     * @param cookie
+     *            the cookie.
+     */
+    void setCookie(final Cookie cookie);
+
+    /**
      * Get the case-insensitive request header field. The Referrer and Referer
      * fields are interchangeable.
      * 

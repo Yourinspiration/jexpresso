@@ -265,6 +265,12 @@ public class RequestImplTest {
         assertEquals(HttpMethod.GET, requestImpl.method());
     }
 
+    @Test
+    public void testCustomCookie() {
+        requestImpl.setCookie(new DefaultCookie("key", "value"));
+        assertEquals("value", requestImpl.cookie("key").getValue());
+    }
+
     class Customer {
         String name;
     }
