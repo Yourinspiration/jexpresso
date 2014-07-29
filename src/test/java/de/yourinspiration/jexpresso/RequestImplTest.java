@@ -219,9 +219,24 @@ public class RequestImplTest {
         assertNull(requestImpl.acceptsCharset("utf-8"));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testAcceptsLanguage() {
-        requestImpl.acceptsLanguage("");
+        final HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add("Accept-Language", "da, en-gb;q=0.8, en;q=0.7");
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertEquals("en", requestImpl.acceptsLanguage("de", "en", "fr"));
+    }
+
+    @Test
+    public void testAcceptsLanguageForNoAcceptableLanguage() {
+        final HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add("Accept-Language", "da, en-gb;q=0.8, en;q=0.7");
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertNull(requestImpl.acceptsLanguage("de", "fr"));
     }
 
     @Test(expected = RuntimeException.class)
