@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultCookie;
@@ -239,9 +240,16 @@ public class RequestImplTest {
         assertNull(requestImpl.acceptsLanguage("de", "fr"));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testIs() {
-        requestImpl.is("");
+        final HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add("Content-Type", "application/json");
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertTrue(requestImpl.is("application/json"));
+        assertTrue(requestImpl.is("application/*"));
+        assertFalse(requestImpl.is("application/xml"));
     }
 
     @Test
