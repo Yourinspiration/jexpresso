@@ -179,9 +179,24 @@ public class RequestImplTest {
         assertEquals("text/html", requestImpl.get("Content-Type"));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testAccepts() {
-        requestImpl.accepts("test/test", "text/plain");
+        final HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertEquals("text/html", requestImpl.accepts("test/test", "text/html"));
+    }
+
+    @Test
+    public void testAcceptsForNoAcceptableType() {
+        final HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9");
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertNull(requestImpl.accepts("test/test", "text/nothing"));
     }
 
     @Test(expected = RuntimeException.class)

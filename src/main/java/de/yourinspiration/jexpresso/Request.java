@@ -107,17 +107,12 @@ public interface Request {
 
     /**
      * Check if the given types are acceptable, returning the best match when
-     * true, otherwise undefined - in which case you should respond with 406
-     * "Not Acceptable".
-     * 
-     * The type value may be a single mime type string such as
-     * "application/json", the extension name such as "json", a comma-delimited
-     * list or an array. When a list or array is given the best match, if any is
-     * returned.
+     * true, otherwise <code>null</code> - in which case you should respond with
+     * 406 "Not Acceptable".
      * 
      * @param types
      *            the types to be checked
-     * @return returns null if no type is acceptable
+     * @return returns <code>null</code> if no type is acceptable
      */
     String accepts(String... types);
 
