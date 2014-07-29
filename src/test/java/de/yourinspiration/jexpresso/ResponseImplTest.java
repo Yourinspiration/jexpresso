@@ -242,17 +242,35 @@ public class ResponseImplTest {
         assertEquals(customer, responseImpl.getContent());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testJsonpObject() {
-        responseImpl.jsonp(null);
+        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
+        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
+
+        final Customer customer = new Customer();
+        customer.name = "Max Mustermann";
+
+        responseImpl.jsonp(customer);
+
+        Mockito.verify(headers).set(CONTENT_TYPE, "application/json");
+        assertEquals(customer, responseImpl.getContent());
+        assertTrue(responseImpl.isJsonp());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testJsonpHttpStatusObject() {
         final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
         Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
 
-        responseImpl.jsonp(HttpStatus.CREATED, null);
+        final Customer customer = new Customer();
+        customer.name = "Max Mustermann";
+
+        responseImpl.jsonp(HttpStatus.CREATED, customer);
+
+        Mockito.verify(headers).set(CONTENT_TYPE, "application/json");
+        assertEquals(customer, responseImpl.getContent());
+        assertTrue(responseImpl.isJsonp());
+        Mockito.verify(fullHttpResponse).setStatus(HttpResponseStatus.CREATED);
     }
 
     @Test
