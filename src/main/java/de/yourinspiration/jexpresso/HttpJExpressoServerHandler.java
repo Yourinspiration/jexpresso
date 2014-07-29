@@ -159,7 +159,8 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
      * @throws IOException
      */
     private boolean findAndCallRoute(final RequestImpl request, final ResponseImpl response) throws IOException {
-        final String path = request.path();
+        final String path = request.path().indexOf("?") > -1 ? request.path().substring(0, request.path().indexOf("?"))
+                : request.path();
         final HttpMethod method = request.method();
 
         boolean routeFound = false;
@@ -194,6 +195,12 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
                             Logger.debug("Route model created {0}", model);
 
                             renderedModel = renderModel(response, model);
+
+                            if (response.isJsonp()) {
+                                final String callback = request.query("callback") != null ? request.query("callback")
+                                        : "";
+                                renderedModel = callback + "(" + renderedModel + ");";
+                            }
 
                             Logger.debug("Rendered model {0}", renderedModel);
                         }

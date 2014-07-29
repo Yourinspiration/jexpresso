@@ -86,6 +86,10 @@ public class HttpJExpressoServerHandlerTest {
 
     @Test
     public void testForNoRoutes() throws Exception {
+        Mockito.when(httpHeaders.get(CONTENT_TYPE)).thenReturn("text/html");
+        Mockito.when(request.getUri()).thenReturn("/test");
+        Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
+
         handler.channelRead0(ctx, request);
     }
 

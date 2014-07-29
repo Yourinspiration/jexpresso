@@ -32,6 +32,7 @@ public class ResponseImpl implements Response {
     private String template;
     private boolean isTemplate = false;
     private boolean isRedirect = false;
+    private boolean isJsonp = false;
 
     protected ResponseImpl(final FullHttpResponse fullHttpResponse) {
         this.fullHttpResponse = fullHttpResponse;
@@ -67,6 +68,10 @@ public class ResponseImpl implements Response {
 
     protected boolean isRedirect() {
         return isRedirect;
+    }
+
+    protected boolean isJsonp() {
+        return isJsonp;
     }
 
     // ========================================================
@@ -176,7 +181,8 @@ public class ResponseImpl implements Response {
 
     @Override
     public void jsonp(final Object content) {
-        throw new RuntimeException("not implemented yet");
+        isJsonp = true;
+        json(content);
     }
 
     @Override
