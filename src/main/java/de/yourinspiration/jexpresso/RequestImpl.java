@@ -217,7 +217,8 @@ public class RequestImpl implements Request {
 
     @Override
     public String acceptsLanguage(final String... lang) {
-        throw new RuntimeException("not implemented yet");
+        final String[] headersTokens = get(HttpHeaders.Names.ACCEPT_LANGUAGE).split(",");
+        return acceptsHeader(headersTokens, lang);
     }
 
     @Override
