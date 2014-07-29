@@ -269,9 +269,23 @@ public class RequestImplTest {
         assertEquals("someHost", requestImpl.host());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testXhr() {
-        requestImpl.xhr();
+        final HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add("X-Requested-With", "XMLHttpRequest");
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertTrue(requestImpl.xhr());
+    }
+
+    @Test
+    public void testXhrForMissingHeader() {
+        final HttpHeaders headers = new DefaultHttpHeaders();
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertFalse(requestImpl.xhr());
     }
 
     @Test
