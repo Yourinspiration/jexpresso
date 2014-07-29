@@ -104,9 +104,16 @@ public class ResponseImplTest {
         responseImpl.clearCookie("");
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testRedirect() {
-        responseImpl.redirect("");
+        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
+        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
+
+        responseImpl.redirect("/test");
+
+        assertTrue(responseImpl.isRedirect());
+        Mockito.verify(headers).set("Location", "/test");
+        Mockito.verify(fullHttpResponse).setStatus(HttpResponseStatus.TEMPORARY_REDIRECT);
     }
 
     @Test

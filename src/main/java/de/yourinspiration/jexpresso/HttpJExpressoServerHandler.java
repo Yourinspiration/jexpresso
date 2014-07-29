@@ -40,6 +40,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     public static final int HTTP_CACHE_SECONDS = 60;
+    private static final byte[] EMPTY_BYTES = new byte[0];
 
     private final List<Route> routes;
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries;
@@ -172,23 +173,38 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
 
                 try {
                     route.handle(request, response);
-                    response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_TYPE, response.type());
 
-                    String renderedModel;
-
-                    if (response.isTemplate()) {
-                        renderedModel = renderTemplate(response);
+                    // java.lang.NullPointerException: Header values cannot be
+                    // null
+                    if (response.type() != null) {
+                        response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_TYPE, response.type());
                     } else {
-                        final Object model = response.getContent();
-
-                        Logger.debug("Route model created {0}", model);
-
-                        renderedModel = renderModel(response, model);
-
-                        Logger.debug("Rendered model {0}", renderedModel);
+                        response.fullHttpReponse().headers()
+                                .set(HttpHeaders.Names.CONTENT_TYPE, ContentType.TEXT_HTML.type());
                     }
 
-                    response.fullHttpReponse().content().writeBytes(renderedModel.getBytes());
+                    if (!responseImpl.isRedirect()) {
+                        String renderedModel;
+
+                        if (response.isTemplate()) {
+                            renderedModel = renderTemplate(response);
+                        } else {
+                            final Object model = response.getContent();
+
+                            Logger.debug("Route model created {0}", model);
+
+                            renderedModel = renderModel(response, model);
+
+                            Logger.debug("Rendered model {0}", renderedModel);
+                        }
+
+                        response.fullHttpReponse().headers()
+                                .set(HttpHeaders.Names.CONTENT_LENGTH, renderedModel.getBytes().length);
+                        response.fullHttpReponse().content().writeBytes(renderedModel.getBytes());
+                    } else {
+                        response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_LENGTH, EMPTY_BYTES.length);
+                        response.fullHttpReponse().content().writeBytes(EMPTY_BYTES);
+                    }
                 } catch (Exception e) {
                     if (e instanceof HttpStatusException) {
                         handleHttpStatusException(response, e);

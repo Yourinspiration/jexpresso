@@ -5,6 +5,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.LOCATION;
 import static io.netty.handler.codec.http.HttpHeaders.Names.SET_COOKIE;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.ServerCookieEncoder;
 
@@ -30,6 +31,7 @@ public class ResponseImpl implements Response {
     private Map<String, Object> options;
     private String template;
     private boolean isTemplate = false;
+    private boolean isRedirect = false;
 
     protected ResponseImpl(final FullHttpResponse fullHttpResponse) {
         this.fullHttpResponse = fullHttpResponse;
@@ -61,6 +63,10 @@ public class ResponseImpl implements Response {
 
     protected FullHttpResponse fullHttpReponse() {
         return fullHttpResponse;
+    }
+
+    protected boolean isRedirect() {
+        return isRedirect;
     }
 
     // ========================================================
@@ -106,7 +112,9 @@ public class ResponseImpl implements Response {
 
     @Override
     public void redirect(final String url) {
-        throw new RuntimeException("not implemented yet");
+        isRedirect = true;
+        set(HttpHeaders.Names.LOCATION, url);
+        status(HttpStatus.TEMPORARY_REDIRECT);
     }
 
     @Override
