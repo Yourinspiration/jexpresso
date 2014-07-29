@@ -167,24 +167,6 @@ public interface Request {
     String host();
 
     /**
-     * Check if the request is fresh - aka Last-Modified and/or the ETag still
-     * match, indicating that the resource is "fresh".
-     * 
-     * @return returns <code>true</code> when the request is fresh, otherwise
-     *         <code>false</code>
-     */
-    boolean fresh();
-
-    /**
-     * Check if the request is stale - aka Last-Modified and/or the ETag do not
-     * match, indicating that the resource is "stale".
-     * 
-     * @return returns <code>true</code> when the request is stale, otherwise
-     *         <code>false</code>
-     */
-    boolean stale();
-
-    /**
      * Check if the request was issued with the "X-Requested-With" header field
      * set to "XMLHttpRequest" (jQuery etc).
      * 

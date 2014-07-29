@@ -270,16 +270,6 @@ public class RequestImplTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void testFresh() {
-        requestImpl.fresh();
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testStale() {
-        requestImpl.stale();
-    }
-
-    @Test(expected = RuntimeException.class)
     public void testXhr() {
         requestImpl.xhr();
     }
