@@ -243,16 +243,6 @@ public class RequestImpl implements Request {
     }
 
     @Override
-    public boolean fresh() {
-        throw new RuntimeException("not implemented yet");
-    }
-
-    @Override
-    public boolean stale() {
-        throw new RuntimeException("not implemented yet");
-    }
-
-    @Override
     public boolean xhr() {
         throw new RuntimeException("not implemented yet");
     }
