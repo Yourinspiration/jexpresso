@@ -244,7 +244,7 @@ public class RequestImpl implements Request {
 
     @Override
     public boolean xhr() {
-        throw new RuntimeException("not implemented yet");
+        return "XMLHttpRequest".equals(get("X-Requested-With"));
     }
 
     @Override
