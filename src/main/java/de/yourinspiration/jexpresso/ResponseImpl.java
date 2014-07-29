@@ -1,9 +1,7 @@
 package de.yourinspiration.jexpresso;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.LOCATION;
-import static io.netty.handler.codec.http.HttpHeaders.Names.SET_COOKIE;
 import io.netty.handler.codec.http.Cookie;
+import io.netty.handler.codec.http.DefaultCookie;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -107,12 +105,14 @@ public class ResponseImpl implements Response {
 
     @Override
     public void cookie(final Cookie cookie) {
-        fullHttpResponse.headers().add(SET_COOKIE, ServerCookieEncoder.encode(cookie));
+        fullHttpResponse.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie));
     }
 
     @Override
     public void clearCookie(final String name) {
-        throw new RuntimeException("not implemented yet");
+        final Cookie cookie = new DefaultCookie(name, "");
+        cookie.setMaxAge(0);
+        fullHttpResponse.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie));
     }
 
     @Override
@@ -124,7 +124,7 @@ public class ResponseImpl implements Response {
 
     @Override
     public void location(final String location) {
-        set(LOCATION, location);
+        set(HttpHeaders.Names.LOCATION, location);
     }
 
     @Override
@@ -193,12 +193,12 @@ public class ResponseImpl implements Response {
 
     @Override
     public void type(final String type) {
-        fullHttpResponse.headers().set(CONTENT_TYPE, type);
+        fullHttpResponse.headers().set(HttpHeaders.Names.CONTENT_TYPE, type);
     }
 
     @Override
     public String type() {
-        return fullHttpResponse.headers().get(CONTENT_TYPE);
+        return fullHttpResponse.headers().get(HttpHeaders.Names.CONTENT_TYPE);
     }
 
     @Override

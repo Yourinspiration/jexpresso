@@ -99,9 +99,17 @@ public class ResponseImplTest {
         Mockito.verify(headers).add(SET_COOKIE, ServerCookieEncoder.encode(cookie));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testClearCookie() {
-        responseImpl.clearCookie("");
+        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
+        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
+
+        responseImpl.clearCookie("test");
+
+        final Cookie cookie = new DefaultCookie("test", "");
+        cookie.setMaxAge(0);
+
+        Mockito.verify(headers).add("Set-Cookie", ServerCookieEncoder.encode(cookie));
     }
 
     @Test
