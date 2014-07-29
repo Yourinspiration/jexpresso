@@ -223,7 +223,8 @@ public class RequestImpl implements Request {
 
     @Override
     public boolean is(final String type) {
-        throw new RuntimeException("not implemented yet");
+        final String contentType = get(HttpHeaders.Names.CONTENT_TYPE);
+        return contentType != null && contentType.matches(type.replaceAll("\\*", ".*"));
     }
 
     @Override
