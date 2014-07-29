@@ -4,7 +4,7 @@
 
 	<groupId>de.yourinspiration</groupId>
 	<artifactId>jexpresso</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2-RELEASE</version>
 	<packaging>jar</packaging>
 
 	<properties>
