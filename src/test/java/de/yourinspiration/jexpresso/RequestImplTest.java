@@ -199,9 +199,24 @@ public class RequestImplTest {
         assertNull(requestImpl.accepts("test/test", "text/nothing"));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testAcceptsCharset() {
-        requestImpl.acceptsCharset("");
+        final HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add("Accept-Charset", "iso-8859-5, unicode-1-1;q=0.8");
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertEquals("unicode-1-1", requestImpl.acceptsCharset("utf-8", "unicode-1-1"));
+    }
+
+    @Test
+    public void testAcceptsCharsetForNotAcceptableCharset() {
+        final HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add("Accept-Charset", "iso-8859-5, unicode-1-1;q=0.8");
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
+        assertNull(requestImpl.acceptsCharset("utf-8"));
     }
 
     @Test(expected = RuntimeException.class)

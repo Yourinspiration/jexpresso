@@ -117,7 +117,7 @@ public interface Request {
     String accepts(String... types);
 
     /**
-     * Check if the given charset are acceptable.
+     * Check if the given charsets are acceptable.
      * 
      * @param charsets
      *            the charsets to be checked

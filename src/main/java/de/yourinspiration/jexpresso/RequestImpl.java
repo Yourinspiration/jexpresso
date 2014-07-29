@@ -206,57 +206,13 @@ public class RequestImpl implements Request {
         // text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
         // The MIME types are separated by commas.
         final String[] acceptHeadersTokens = get(HttpHeaders.Names.ACCEPT).split(",");
-
-        // We need an ordered map, ordered by the qualifiers
-        final Map<String, List<String>> qualifiedAcceptHeaders = new TreeMap<>(new Comparator<String>() {
-
-            @Override
-            public int compare(String o1, String o2) {
-                // Because q=1.0 is before q=0.9 we must order the other way
-                // round. The natural order would put q=1.0 after q=0.9
-                return o2.compareTo(o1);
-            }
-        });
-
-        for (int i = 0, l = acceptHeadersTokens.length; i < l; i++) {
-            // MIME types may have a qualifier or not. If the MIME type has no
-            // qualifier it has the highest priority.
-            if (acceptHeadersTokens[i].matches(".*;q=.*")) {
-                final String qualifier = acceptHeadersTokens[i].substring(acceptHeadersTokens[i].indexOf(";") + 1);
-                final String acceptHeader = acceptHeadersTokens[i].substring(0, acceptHeadersTokens[i].indexOf(";"));
-                List<String> acceptHeaders = qualifiedAcceptHeaders.get(qualifier);
-                if (acceptHeaders == null) {
-                    acceptHeaders = new ArrayList<>();
-                }
-                acceptHeaders.add(acceptHeader);
-                qualifiedAcceptHeaders.put(qualifier, acceptHeaders);
-            } else {
-                List<String> acceptHeaders = qualifiedAcceptHeaders.get("q=1.0");
-                if (acceptHeaders == null) {
-                    acceptHeaders = new ArrayList<>();
-                }
-                acceptHeaders.add(acceptHeadersTokens[i]);
-                qualifiedAcceptHeaders.put("q=1.0", acceptHeaders);
-            }
-        }
-
-        // Take the first best match.
-        for (Entry<String, List<String>> entry : qualifiedAcceptHeaders.entrySet()) {
-            for (String type : types) {
-                for (String acceptHeader : entry.getValue()) {
-                    if (type.matches(acceptHeader.replace("*", ".*"))) {
-                        return type;
-                    }
-                }
-            }
-        }
-
-        return null;
+        return acceptsHeader(acceptHeadersTokens, types);
     }
 
     @Override
     public String acceptsCharset(final String... charsets) {
-        throw new RuntimeException("not implemented yet");
+        final String[] headersTokens = get(HttpHeaders.Names.ACCEPT_CHARSET).split(",");
+        return acceptsHeader(headersTokens, charsets);
     }
 
     @Override
@@ -323,6 +279,55 @@ public class RequestImpl implements Request {
     @Override
     public HttpMethod method() {
         return fullHttpRequest.getMethod();
+    }
+
+    private String acceptsHeader(final String[] headersTokens, final String... types) {
+        // We need an ordered map, ordered by the qualifiers
+        final Map<String, List<String>> qualifiedHeaders = new TreeMap<>(new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                // Because q=1.0 is before q=0.9 we must order the other way
+                // round. The natural order would put q=1.0 after q=0.9
+                return o2.compareTo(o1);
+            }
+        });
+
+        for (int i = 0, l = headersTokens.length; i < l; i++) {
+            // Types may have a qualifier or not. If the type has no
+            // qualifier it has the highest priority.
+            final String headerToken = headersTokens[i].trim();
+            if (headerToken.matches(".*;q=.*")) {
+                final String qualifier = headerToken.substring(headerToken.indexOf(";") + 1);
+                final String header = headerToken.substring(0, headerToken.indexOf(";"));
+                List<String> headers = qualifiedHeaders.get(qualifier);
+                if (headers == null) {
+                    headers = new ArrayList<>();
+                }
+                headers.add(header);
+                qualifiedHeaders.put(qualifier, headers);
+            } else {
+                List<String> headers = qualifiedHeaders.get("q=1.0");
+                if (headers == null) {
+                    headers = new ArrayList<>();
+                }
+                headers.add(headersTokens[i].trim());
+                qualifiedHeaders.put("q=1.0", headers);
+            }
+        }
+
+        // Take the first best match.
+        for (Entry<String, List<String>> entry : qualifiedHeaders.entrySet()) {
+            for (String type : types) {
+                for (String header : entry.getValue()) {
+                    if (type.matches(header.replace("*", ".*"))) {
+                        return type;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
 }
