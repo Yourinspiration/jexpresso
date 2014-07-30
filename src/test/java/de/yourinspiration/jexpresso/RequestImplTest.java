@@ -324,7 +324,12 @@ public class RequestImplTest {
 
     @Test
     public void testCustomCookie() {
+        final HttpHeaders headers = new DefaultHttpHeaders();
+
+        Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
+
         requestImpl.setCookie(new DefaultCookie("key", "value"));
+
         assertEquals("value", requestImpl.cookie("key").getValue());
     }
 

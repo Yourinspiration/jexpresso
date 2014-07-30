@@ -96,18 +96,7 @@ public class RequestImpl implements Request {
 
     @Override
     public String param(final String name) {
-        String param = "";
-
-        final String[] currentPathTokens = fullHttpRequest.getUri().split("/");
-        final String[] pathTokens = route.getPath().split("/");
-        for (int i = 0, l = pathTokens.length; i < l; i++) {
-            if (pathTokens[i].equals(":" + name)) {
-                param = currentPathTokens[i];
-                break;
-            }
-        }
-
-        return param;
+        return params().get(name);
     }
 
     @Override
@@ -131,17 +120,7 @@ public class RequestImpl implements Request {
 
     @Override
     public String query(final String name) {
-        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(fullHttpRequest.getUri());
-        Map<String, List<String>> params = queryStringDecoder.parameters();
-        final StringBuilder buf = new StringBuilder();
-        if (params.get(name) != null) {
-
-            List<String> vals = params.get(name);
-            for (String val : vals) {
-                buf.append(val);
-            }
-        }
-        return buf.toString();
+        return query().get(name);
     }
 
     @Override
@@ -168,18 +147,9 @@ public class RequestImpl implements Request {
 
     @Override
     public Cookie cookie(final String name) {
-        for (Cookie cookie : customCookies) {
+        for (Cookie cookie : cookies()) {
             if (cookie.getName().equals(name)) {
                 return cookie;
-            }
-        }
-        final String cookieString = fullHttpRequest.headers().get(COOKIE);
-        if (cookieString != null) {
-            Set<Cookie> cookies = CookieDecoder.decode(cookieString);
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(name)) {
-                    return cookie;
-                }
             }
         }
         return null;
