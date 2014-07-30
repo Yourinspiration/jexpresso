@@ -71,11 +71,23 @@ Add this to your repositories
 
 Add this dependency to your pom
 
+Latest release:
+
 ```xml
 <dependency>
   <groupId>de.yourinspiration</groupId>
   <artifactId>jexpresso</artifactId>
   <version>1.0.0-RELEASE</version>
+</dependency>
+```
+
+Latest snapshot:
+
+```xml
+<dependency>
+  <groupId>de.yourinspiration</groupId>
+  <artifactId>jexpresso</artifactId>
+  <version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
