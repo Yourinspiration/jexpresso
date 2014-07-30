@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.Attribute;
@@ -70,8 +69,6 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         // The response object is created by the MiddlewareChannelHandler.
         responseImpl = attr.get().getResponse();
 
-        final FullHttpResponse response = responseImpl.fullHttpReponse();
-
         // Returns false when no route matched the request path
         // and method.
         if (!findAndCallRoute(requestImpl, responseImpl)) {
@@ -80,7 +77,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
             sendError(ctx, HttpResponseStatus.NOT_FOUND);
         }
 
-        ctx.write(response);
+        ctx.write(responseImpl.fullHttpReponse());
 
         if (!isKeepAlive(request)) {
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
@@ -159,52 +156,19 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
      * @throws IOException
      */
     private boolean findAndCallRoute(final RequestImpl request, final ResponseImpl response) throws IOException {
-        final String path = request.path().indexOf("?") > -1 ? request.path().substring(0, request.path().indexOf("?"))
-                : request.path();
-        final HttpMethod method = request.method();
-
-        boolean routeFound = false;
-
         for (Route route : routes) {
 
-            if (route.matchesPathAndMethod(path, method)) {
+            if (route.matchesPathAndMethod(getBasePath(request), request.method())) {
                 Logger.debug("Found matching route {0}", route);
 
                 request.setRoute(route);
 
                 try {
                     route.handle(request, response);
-
-                    // java.lang.NullPointerException: Header values cannot be
-                    // null
-                    if (response.type() != null) {
-                        response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_TYPE, response.type());
-                    } else {
-                        response.fullHttpReponse().headers()
-                                .set(HttpHeaders.Names.CONTENT_TYPE, ContentType.TEXT_HTML.type());
-                    }
+                    setContentType(response);
 
                     if (!responseImpl.isRedirect()) {
-                        String renderedModel;
-
-                        if (response.isTemplate()) {
-                            renderedModel = renderTemplate(response);
-                        } else {
-                            final Object model = response.getContent();
-
-                            Logger.debug("Route model created {0}", model);
-
-                            renderedModel = renderModel(response, model);
-
-                            if (response.isJsonp()) {
-                                final String callback = request.query("callback") != null ? request.query("callback")
-                                        : "";
-                                renderedModel = callback + "(" + renderedModel + ");";
-                            }
-
-                            Logger.debug("Rendered model {0}", renderedModel);
-                        }
-
+                        String renderedModel = getRenderedModel(request, response);
                         response.fullHttpReponse().headers()
                                 .set(HttpHeaders.Names.CONTENT_LENGTH, renderedModel.getBytes().length);
                         response.fullHttpReponse().content().writeBytes(renderedModel.getBytes());
@@ -212,7 +176,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
                         response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_LENGTH, EMPTY_BYTES.length);
                         response.fullHttpReponse().content().writeBytes(EMPTY_BYTES);
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     if (e instanceof HttpStatusException) {
                         handleHttpStatusException(response, e);
                     } else {
@@ -220,13 +184,49 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
                     }
                 }
 
-                routeFound = true;
-
-                break;
+                return true;
             }
         }
 
-        return routeFound;
+        return false;
+    }
+
+    private String getRenderedModel(final RequestImpl request, final ResponseImpl response) {
+        String renderedModel;
+
+        if (response.isTemplate()) {
+            renderedModel = renderTemplate(response);
+        } else {
+            final Object model = response.getContent();
+
+            Logger.debug("Route model created {0}", model);
+
+            renderedModel = renderModel(response, model);
+
+            if (response.isJsonp()) {
+                final String callback = request.query("callback") != null ? request.query("callback") : "";
+                renderedModel = callback + "(" + renderedModel + ");";
+            }
+
+            Logger.debug("Rendered model {0}", renderedModel);
+        }
+        return renderedModel;
+    }
+
+    private void setContentType(final ResponseImpl response) {
+        // java.lang.NullPointerException: Header values cannot be
+        // null
+        if (response.type() != null) {
+            response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_TYPE, response.type());
+        } else {
+            response.fullHttpReponse().headers().set(HttpHeaders.Names.CONTENT_TYPE, ContentType.TEXT_HTML.type());
+        }
+    }
+
+    private String getBasePath(final RequestImpl request) {
+        final String path = request.path().indexOf("?") > -1 ? request.path().substring(0, request.path().indexOf("?"))
+                : request.path();
+        return path;
     }
 
     private String renderTemplate(final ResponseImpl response) {
@@ -261,7 +261,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         return renderedModel;
     }
 
-    private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+    private void sendError(final ChannelHandlerContext ctx, final HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(
                 "Failure: " + status + "\r\n", CharsetUtil.UTF_8));
         response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
