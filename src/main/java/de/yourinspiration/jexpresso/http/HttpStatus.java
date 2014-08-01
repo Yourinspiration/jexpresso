@@ -486,6 +486,8 @@ public enum HttpStatus {
 
     /**
      * Return the integer value of this status code.
+     * 
+     * @return returns the integer value of the status code
      */
     public int value() {
         return this.value;
@@ -493,6 +495,8 @@ public enum HttpStatus {
 
     /**
      * Return the reason phrase of this status code.
+     * 
+     * @return returns the reason phrase of the status code
      */
     public String getReasonPhrase() {
         return reasonPhrase;

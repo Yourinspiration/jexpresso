@@ -220,6 +220,6 @@ public interface Response {
      * @param options
      *            the options
      */
-    void render(final String template, final Map<String, Object> options);
+    void render(final String view, final Map<String, Object> options);
 
 }

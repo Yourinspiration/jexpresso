@@ -46,7 +46,6 @@ public class ExceptionHandlerEntry {
      *            the request
      * @param response
      *            the response
-     * @return the result of the callback handler
      */
     public void invokeHandler(final Request request, final Response response) {
         routeHandler.handle(request, response);

@@ -31,9 +31,11 @@ public interface Request {
     /**
      * Returns the request body as parsed JSON.
      * 
+     * @param <T>
+     *            the type of the object
      * @param clazz
      *            the class of the parsed content
-     * @return hte request body
+     * @return the request body
      */
     <T> T json(Class<T> clazz);
 
@@ -171,7 +173,7 @@ public interface Request {
      * set to "XMLHttpRequest" (jQuery etc).
      * 
      * @return returns <code>true</code> when xhr is enabled, otherwise
-     *         </code>false</code>
+     *         <code>false</code>
      */
     boolean xhr();
 
