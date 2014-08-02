@@ -56,28 +56,13 @@ app.listen(3333, function() {
 
 ## Maven
 
-Add this to your repositories
-
-```xml
-<repository>
-  <id>yourinspiration.realeases</id>
-  <url>http://nexus.yourinspiration.de/nexus/content/repositories/releases/</url>
-</repository>
-<repository>
-  <id>yourinspiration.snapshots</id>
-  <url>http://nexus.yourinspiration.de/nexus/content/repositories/snapshots/</url>
-</repository>
-```
-
-Add this dependency to your pom
-
 Latest release:
 
 ```xml
 <dependency>
   <groupId>de.yourinspiration</groupId>
   <artifactId>jexpresso</artifactId>
-  <version>1.0.0-RELEASE</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
