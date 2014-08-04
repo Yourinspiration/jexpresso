@@ -7,6 +7,8 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.ServerCookieEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -25,6 +27,7 @@ public class ResponseImpl implements Response {
     private Object content;
     private byte[] bytes;
     private boolean isBinary = false;
+    private final List<ResponseListener> responseListener = new ArrayList<ResponseListener>();
 
     private Map<String, Object> options;
     private String template;
@@ -70,6 +73,12 @@ public class ResponseImpl implements Response {
 
     protected boolean isJsonp() {
         return isJsonp;
+    }
+
+    protected void invokeResponseListeners(final Request request) {
+        for (ResponseListener listener : responseListener) {
+            listener.callback(request, this);
+        }
     }
 
     // ========================================================
@@ -212,6 +221,11 @@ public class ResponseImpl implements Response {
         this.template = template;
         this.options = options;
         this.isTemplate = true;
+    }
+
+    @Override
+    public void addListener(ResponseListener listener) {
+        responseListener.add(listener);
     }
 
 }

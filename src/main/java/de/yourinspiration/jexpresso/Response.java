@@ -222,4 +222,12 @@ public interface Response {
      */
     void render(final String view, final Map<String, Object> options);
 
+    /**
+     * Add a listener, that will be called after the response has been created.
+     * 
+     * @param listener
+     *            the listener to be added
+     */
+    void addListener(ResponseListener listener);
+
 }

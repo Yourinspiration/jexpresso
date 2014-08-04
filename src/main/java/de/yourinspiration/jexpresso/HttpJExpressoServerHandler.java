@@ -74,8 +74,10 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         if (!findAndCallRoute(requestImpl, responseImpl)) {
             // Send 404 to the client because no route or static
             // resource matched the request.
-            sendError(ctx, HttpResponseStatus.NOT_FOUND);
+            sendError(ctx, responseImpl, HttpResponseStatus.NOT_FOUND);
         }
+
+        responseImpl.invokeResponseListeners(requestImpl);
 
         ctx.write(responseImpl.fullHttpReponse());
 
@@ -261,10 +263,13 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         return renderedModel;
     }
 
-    private void sendError(final ChannelHandlerContext ctx, final HttpResponseStatus status) {
+    private void sendError(final ChannelHandlerContext ctx, final ResponseImpl responseImpl,
+            final HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(
                 "Failure: " + status + "\r\n", CharsetUtil.UTF_8));
         response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
+
+        responseImpl.status(HttpStatus.valueOf(status.code()));
 
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
