@@ -56,23 +56,13 @@ app.listen(3333, function() {
 
 ## Maven
 
-Latest release:
+Latest stable release:
 
 ```xml
 <dependency>
   <groupId>de.yourinspiration</groupId>
   <artifactId>jexpresso</artifactId>
-  <version>1.0.0</version>
-</dependency>
-```
-
-Latest snapshot:
-
-```xml
-<dependency>
-  <groupId>de.yourinspiration</groupId>
-  <artifactId>jexpresso</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
