@@ -85,7 +85,7 @@ public class RequestImpl implements Request {
         final String[] currentPathTokens = fullHttpRequest.getUri().split("/");
         final String[] pathTokens = route.getPath().split("/");
 
-        for (int i = 0, l = pathTokens.length; i < l; i++) {
+        for (int i = 0, l = currentPathTokens.length; i < l; i++) {
             if (pathTokens[i].startsWith(":")) {
                 params.put(pathTokens[i].replace(":", ""), currentPathTokens[i]);
             }
