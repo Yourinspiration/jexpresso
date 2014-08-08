@@ -1,19 +1,21 @@
 package de.yourinspiration.jexpresso;
 
-import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.DefaultCookie;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.ServerCookieEncoder;
+import de.yourinspiration.jexpresso.exception.ForbiddenException;
+import de.yourinspiration.jexpresso.exception.NotFoundException;
+import de.yourinspiration.jexpresso.http.ContentType;
+import de.yourinspiration.jexpresso.http.HttpStatus;
+import io.netty.handler.codec.http.*;
+import org.apache.commons.io.IOUtils;
+import staticresources.Resource;
 
+import javax.activation.MimetypesFileTypeMap;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import de.yourinspiration.jexpresso.http.ContentType;
-import de.yourinspiration.jexpresso.http.HttpStatus;
 
 /**
  * Implementation for {@link Response}.
@@ -24,11 +26,10 @@ import de.yourinspiration.jexpresso.http.HttpStatus;
 public class ResponseImpl implements Response {
 
     private final FullHttpResponse fullHttpResponse;
+    private final List<ResponseListener> responseListener = new ArrayList<>();
     private Object content;
     private byte[] bytes;
     private boolean isBinary = false;
-    private final List<ResponseListener> responseListener = new ArrayList<ResponseListener>();
-
     private Map<String, Object> options;
     private String template;
     private boolean isTemplate = false;
@@ -226,6 +227,68 @@ public class ResponseImpl implements Response {
     @Override
     public void addListener(ResponseListener listener) {
         responseListener.add(listener);
+    }
+
+    @Override
+    public void sendFile(final String filename) {
+        final URL fileUrl = getClass().getResource("/" + filename);
+
+        Resource fileResource;
+        try {
+            fileResource = Resource.newResource(fileUrl);
+        } catch (IOException e) {
+            throw new NotFoundException();
+        }
+
+        if (!fileResource.exists()) {
+            throw new NotFoundException();
+        }
+
+        if (fileResource.isDirectory()) {
+            throw new ForbiddenException();
+        }
+
+        byte[] bytes = new byte[0];
+
+        try (final InputStream fileInputStream = fileUrl.openStream()) {
+            try {
+                bytes = IOUtils.toByteArray(fileInputStream);
+            } catch (NullPointerException npe) {
+                throw new NotFoundException();
+            } finally {
+                fileInputStream.close();
+            }
+
+            fileInputStream.close();
+        } catch (IOException ioe) {
+            throw new NotFoundException();
+        }
+
+        send(bytes);
+        type(getContentType(filename));
+    }
+
+    private String getContentType(final String path) {
+        MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+        mimeTypesMap.addMimeTypes("image/png png PNG");
+        mimeTypesMap.addMimeTypes("image/gif gif GIF");
+        mimeTypesMap.addMimeTypes("image/jpeg jpeg JPEG jpg JPG");
+        mimeTypesMap.addMimeTypes("image/tiff tiff TIFF");
+        mimeTypesMap.addMimeTypes("text/javascript js JS");
+        mimeTypesMap.addMimeTypes("application/json json JSON");
+        mimeTypesMap.addMimeTypes("text/css css CSS");
+
+        mimeTypesMap.addMimeTypes("application/ogg ogg OGG");
+        mimeTypesMap.addMimeTypes("application/pdf pdf PDF");
+        mimeTypesMap.addMimeTypes("application/postscript ps PS");
+        mimeTypesMap.addMimeTypes("application/xml xml XML");
+        mimeTypesMap.addMimeTypes("application/zip zip ZIP");
+        mimeTypesMap.addMimeTypes("application/gzip gzip GZIP");
+
+        mimeTypesMap.addMimeTypes("audio/mp4 mp4 MP4");
+        mimeTypesMap.addMimeTypes("audio/mpeg mpeg mp3");
+
+        return mimeTypesMap.getContentType(path);
     }
 
 }

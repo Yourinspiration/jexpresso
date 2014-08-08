@@ -1,10 +1,9 @@
 package de.yourinspiration.jexpresso;
 
+import de.yourinspiration.jexpresso.http.HttpStatus;
 import io.netty.handler.codec.http.Cookie;
 
 import java.util.Map;
-
-import de.yourinspiration.jexpresso.http.HttpStatus;
 
 /**
  * Represents a HTTP response.
@@ -229,5 +228,12 @@ public interface Response {
      *            the listener to be added
      */
     void addListener(ResponseListener listener);
+
+    /**
+     * Send the file to the client. The file must be on the classpath.
+     *
+     * @param filename the full path to the file
+     */
+    void sendFile(String filename);
 
 }
