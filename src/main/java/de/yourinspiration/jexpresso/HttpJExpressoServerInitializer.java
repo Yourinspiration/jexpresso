@@ -1,5 +1,6 @@
 package de.yourinspiration.jexpresso;
 
+import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -11,13 +12,10 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import java.util.List;
 import java.util.Map;
 
-import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
-
 /**
  * Netty channel initializer.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class HttpJExpressoServerInitializer extends ChannelInitializer<Channel> {
 
@@ -29,8 +27,8 @@ public class HttpJExpressoServerInitializer extends ChannelInitializer<Channel> 
     private final List<MiddlewareHandler> middlewareHandlers;
 
     protected HttpJExpressoServerInitializer(final List<Route> routes,
-            final List<ExceptionHandlerEntry> exceptionHandlerEntries,
-            final List<MiddlewareHandler> middlewareHandlers, final Map<String, TemplateEngine> templateEngines) {
+                                             final List<ExceptionHandlerEntry> exceptionHandlerEntries,
+                                             final List<MiddlewareHandler> middlewareHandlers, final Map<String, TemplateEngine> templateEngines) {
         this.routes = routes;
         this.exceptionHandlerEntries = exceptionHandlerEntries;
         this.middlewareHandlers = middlewareHandlers;

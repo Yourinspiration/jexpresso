@@ -1,46 +1,34 @@
 package de.yourinspiration.jexpresso;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
-import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.CookieDecoder;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import com.google.gson.Gson;
+import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
 
-import com.google.gson.Gson;
+import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 
 /**
  * Implementation for {@link Request}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class RequestImpl implements Request {
 
     private final FullHttpRequest fullHttpRequest;
-    private Route route;
     private final Gson gson;
     private final RequestResponseContext requestResponseContext;
     private final List<Cookie> customCookies = new ArrayList<>();
+    private Route route;
 
     protected RequestImpl(final FullHttpRequest fullHttpRequest, final RequestResponseContext requestResponseContext) {
         this(fullHttpRequest, requestResponseContext, null);
     }
 
     protected RequestImpl(final FullHttpRequest fullHttpRequest, final RequestResponseContext requestContext,
-            final Route route) {
+                          final Route route) {
         this.fullHttpRequest = fullHttpRequest;
         this.requestResponseContext = requestContext;
         this.route = route;
@@ -255,10 +243,10 @@ public class RequestImpl implements Request {
             }
         });
 
-        for (int i = 0, l = headersTokens.length; i < l; i++) {
+        for (String headersToken : headersTokens) {
             // Types may have a qualifier or not. If the type has no
             // qualifier it has the highest priority.
-            final String headerToken = headersTokens[i].trim();
+            final String headerToken = headersToken.trim();
             if (headerToken.matches(".*;q=.*")) {
                 final String qualifier = headerToken.substring(headerToken.indexOf(";") + 1);
                 final String header = headerToken.substring(0, headerToken.indexOf(";"));
@@ -273,7 +261,7 @@ public class RequestImpl implements Request {
                 if (headers == null) {
                     headers = new ArrayList<>();
                 }
-                headers.add(headersTokens[i].trim());
+                headers.add(headersToken.trim());
                 qualifiedHeaders.put("q=1.0", headers);
             }
         }

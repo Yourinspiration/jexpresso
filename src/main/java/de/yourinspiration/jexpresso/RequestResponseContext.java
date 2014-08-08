@@ -1,6 +1,5 @@
 package de.yourinspiration.jexpresso;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.SET_COOKIE;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.ServerCookieEncoder;
@@ -11,11 +10,12 @@ import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.netty.handler.codec.http.HttpHeaders.Names.SET_COOKIE;
+
 /**
  * Provides access to data shared by the entire request-response-chain.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class RequestResponseContext {
 

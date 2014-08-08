@@ -1,29 +1,26 @@
 package de.yourinspiration.jexpresso;
 
+import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.mockito.internal.verification.AtLeast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.mockito.internal.verification.AtLeast;
-
-import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
-
 /**
  * Test case for {@link HttpJExpressoServerInitializer}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class HttpJExpressoServerInitializerTest {
 

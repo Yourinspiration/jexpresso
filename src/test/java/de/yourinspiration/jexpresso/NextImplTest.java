@@ -8,18 +8,15 @@ import org.mockito.MockitoAnnotations;
 
 /**
  * Test case for {@link NextImpl}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class NextImplTest {
 
-    private NextImpl nextImpl;
-
-    private int currentIndex = 1;
-
     @Mock
     MiddlewareChannelHandler middlewareChannelHandler;
+    private NextImpl nextImpl;
+    private int currentIndex = 1;
 
     @Before
     public void setUp() {

@@ -6,9 +6,8 @@ import de.yourinspiration.jexpresso.RouteHandler;
 
 /**
  * Aggregates the information for exception callback handlers.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class ExceptionHandlerEntry {
 
@@ -17,11 +16,9 @@ public class ExceptionHandlerEntry {
 
     /**
      * Constructs a new object.
-     * 
-     * @param exceptionClass
-     *            the exception class to be handled
-     * @param routeHandler
-     *            the callback handler
+     *
+     * @param exceptionClass the exception class to be handled
+     * @param routeHandler   the callback handler
      */
     public ExceptionHandlerEntry(final Class<? extends Exception> exceptionClass, final RouteHandler routeHandler) {
         this.exceptionClass = exceptionClass;
@@ -30,9 +27,8 @@ public class ExceptionHandlerEntry {
 
     /**
      * Checks if the exception is the of the same class.
-     * 
-     * @param e
-     *            the exception to be checked
+     *
+     * @param e the exception to be checked
      * @return returns <code>true</code> if the excpetion class is the same
      */
     public boolean isInstanceOf(final Exception e) {
@@ -41,11 +37,9 @@ public class ExceptionHandlerEntry {
 
     /**
      * Invokes the callback handler.
-     * 
-     * @param request
-     *            the request
-     * @param response
-     *            the response
+     *
+     * @param request  the request
+     * @param response the response
      */
     public void invokeHandler(final Request request, final Response response) {
         routeHandler.handle(request, response);

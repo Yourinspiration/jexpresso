@@ -1,5 +1,7 @@
 package staticresources;
 
+import org.pmw.tinylog.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -36,6 +38,7 @@ class JarFileResource extends JarResource {
             try {
                 _jarFile.close();
             } catch (IOException ioe) {
+                Logger.warn("Error closing jar file");
             }
         }
         _jarFile = null;
@@ -104,9 +107,10 @@ class JarFileResource extends JarResource {
             else {
                 // No - so lets look if the root entry exists.
                 try {
-                    JarURLConnection c = (JarURLConnection) ((new URL(_jarUrl)).openConnection());
+                    JarURLConnection c = (JarURLConnection) (new URL(_jarUrl)).openConnection();
                     jarFile = c.getJarFile();
                 } catch (Exception e) {
+                    Logger.warn(e, "Error open connection");
                 }
             }
 
@@ -141,12 +145,13 @@ class JarFileResource extends JarResource {
                     try {
                         _url = new URL(_urlString);
                     } catch (MalformedURLException ex) {
+                        Logger.warn(ex, "Error creating URL");
                     }
                 }
             }
         }
 
-        _exists = (_directory || _entry != null);
+        _exists = _directory || _entry != null;
         return _exists;
     }
 

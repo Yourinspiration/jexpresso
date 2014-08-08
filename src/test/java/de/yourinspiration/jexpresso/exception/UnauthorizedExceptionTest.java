@@ -1,14 +1,13 @@
 package de.yourinspiration.jexpresso.exception;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test case for {@link UnauthorizedException}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class UnauthorizedExceptionTest {
 

@@ -1,34 +1,23 @@
 package de.yourinspiration.jexpresso;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.LOCATION;
-import static io.netty.handler.codec.http.HttpHeaders.Names.SET_COOKIE;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.DefaultCookie;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.ServerCookieEncoder;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import de.yourinspiration.jexpresso.http.HttpStatus;
+import io.netty.handler.codec.http.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import de.yourinspiration.jexpresso.http.HttpStatus;
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static org.junit.Assert.*;
 
 /**
  * Test case for {@link ResponseImpl}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class ResponseImplTest {
 

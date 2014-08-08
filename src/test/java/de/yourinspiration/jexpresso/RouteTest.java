@@ -1,29 +1,24 @@
 package de.yourinspiration.jexpresso;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import io.netty.handler.codec.http.HttpMethod;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.Assert.*;
+
 /**
  * Test case for {@link Route}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class RouteTest {
 
-    private Route route;
-
     private final String path = "/test/path";
     private final HttpMethod method = HttpMethod.GET;
-
+    private Route route;
     @Mock
     private RouteHandler routeHandler;
 
@@ -67,7 +62,6 @@ public class RouteTest {
     @Test
     public void testEqualsObject() {
         assertTrue(route.equals(new Route(path, method, routeHandler)));
-        assertFalse(route.equals("false"));
         assertFalse(route.equals(null));
         assertTrue(route.equals(route));
         assertFalse(route.equals(new Route("/different/path", method, routeHandler)));

@@ -2,14 +2,12 @@ package de.yourinspiration.jexpresso.transformer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import de.yourinspiration.jexpresso.http.ContentType;
 
 /**
  * Transforms the model data to the JSON data format.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class JsonTransformer implements ResponseTransformer {
 

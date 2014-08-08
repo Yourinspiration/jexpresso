@@ -1,124 +1,125 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>de.yourinspiration</groupId>
-	<artifactId>jexpresso</artifactId>
+    <groupId>de.yourinspiration</groupId>
+    <artifactId>jexpresso</artifactId>
     <version>1.2.0</version>
     <packaging>jar</packaging>
 
-	<name>JExpresso web framework</name>
-	<description>A java web framework inspired by expressjs to build java web application with minimal effort</description>
-	<url>https://github.com/Yourinspiration/jexpresso</url>
+    <name>JExpresso web framework</name>
+    <description>A java web framework inspired by expressjs to build java web application with minimal effort
+    </description>
+    <url>https://github.com/Yourinspiration/jexpresso</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
-	<scm>
-		<connection>scm:git:https://github.com/Yourinspiration/jexpresso.git</connection>
-		<developerConnection>scm:git:https://github.com/Yourinspiration/jexpresso.git</developerConnection>
-		<url>https://github.com/Yourinspiration/jexpresso.git</url>
-	</scm>
+    <scm>
+        <connection>scm:git:https://github.com/Yourinspiration/jexpresso.git</connection>
+        <developerConnection>scm:git:https://github.com/Yourinspiration/jexpresso.git</developerConnection>
+        <url>https://github.com/Yourinspiration/jexpresso.git</url>
+    </scm>
 
-	<contributors>
-		<contributor>
-			<name>Marcel Härle</name>
-			<email>haerle@marcel-haerle.de</email>
-			<url>http://marcel-haerle.de</url>
-			<organization>Yourinspiration</organization>
-			<organizationUrl>http://yourinspiration.de</organizationUrl>
-			<roles>
-				<role>project lead</role>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</contributor>
-		<contributor>
-			<name>Michael Malcharek</name>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</contributor>
-		<contributor>
-			<name>Sebastian Fischer</name>
-			<roles>
-				<role>testing</role>
-				<role>developer</role>
-			</roles>
-		</contributor>
-	</contributors>
+    <contributors>
+        <contributor>
+            <name>Marcel Härle</name>
+            <email>haerle@marcel-haerle.de</email>
+            <url>http://marcel-haerle.de</url>
+            <organization>Yourinspiration</organization>
+            <organizationUrl>http://yourinspiration.de</organizationUrl>
+            <roles>
+                <role>project lead</role>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Michael Malcharek</name>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Sebastian Fischer</name>
+            <roles>
+                <role>testing</role>
+                <role>developer</role>
+            </roles>
+        </contributor>
+    </contributors>
 
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
-	<developers>
-		<developer>
-			<name>Marcel Härle</name>
-			<email>haerle@marcel-haerle.de</email>
-			<organization>Yourinspiration</organization>
-			<organizationUrl>http://yourinspiration.de</organizationUrl>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <name>Marcel Härle</name>
+            <email>haerle@marcel-haerle.de</email>
+            <organization>Yourinspiration</organization>
+            <organizationUrl>http://yourinspiration.de</organizationUrl>
+        </developer>
+    </developers>
 
-	<organization>
-		<name>Yourinspiration</name>
-		<url>http://yourinspiration.de</url>
-	</organization>
+    <organization>
+        <name>Yourinspiration</name>
+        <url>http://yourinspiration.de</url>
+    </organization>
 
-	<dependencies>
-		<!-- TESTING -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- LOGGING -->
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>tinylog</artifactId>
-			<version>0.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tinylog</groupId>
-			<artifactId>log4j-facade</artifactId>
-			<version>0.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.7</version>
-		</dependency>
-		<!-- MISC -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-			<version>4.0.21.Final</version>
-		</dependency>
+    <dependencies>
+        <!-- TESTING -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- LOGGING -->
+        <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>tinylog</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>log4j-facade</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+        <!-- MISC -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.21.Final</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -131,116 +132,116 @@
         </dependency>
     </dependencies>
 
-	<profiles>
-		<profile>
-			<id>release</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>2.2.1</version>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9.1</version>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.5</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.2</version>
-						<extensions>true</extensions>
-						<configuration>
-							<serverId>ossrh</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>true</autoReleaseAfterClose>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.2</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<optimize>true</optimize>
-					<debug>true</debug>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-							<goal>cpd-check</goal>
-						</goals>
-						<phase>test</phase>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<instrumentation>
-						<excludes>
-							<exclude>de/yourinspiration/jexpresso/JExpressoBase*.class</exclude>
-						</excludes>
-					</instrumentation>
-					<check>
-						<branchRate>75</branchRate>
-						<lineRate>75</lineRate>
-						<haltOnFailure>true</haltOnFailure>
-						<totalBranchRate>75</totalBranchRate>
-						<totalLineRate>75</totalLineRate>
-						<packageLineRate>75</packageLineRate>
-						<packageBranchRate>75</packageBranchRate>
-					</check>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <optimize>true</optimize>
+                    <debug>true</debug>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>cpd-check</goal>
+                        </goals>
+                        <phase>test</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <instrumentation>
+                        <excludes>
+                            <exclude>de/yourinspiration/jexpresso/JExpressoBase*.class</exclude>
+                        </excludes>
+                    </instrumentation>
+                    <check>
+                        <branchRate>75</branchRate>
+                        <lineRate>75</lineRate>
+                        <haltOnFailure>true</haltOnFailure>
+                        <totalBranchRate>75</totalBranchRate>
+                        <totalLineRate>75</totalLineRate>
+                        <packageLineRate>75</packageLineRate>
+                        <packageBranchRate>75</packageBranchRate>
+                    </check>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -5,9 +5,8 @@ import de.yourinspiration.jexpresso.http.ContentType;
 /**
  * Transforms the model data to plain text without any type specific
  * transformation.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class PlainTextTransformer implements ResponseTransformer {
 

@@ -12,7 +12,7 @@ import java.security.Permission;
 
 /**
  * File Resource.
- * <p/>
+ *
  * Handle resources of implied or explicit file type. This class can check for
  * aliasing in the filesystem (eg case insensitivity).
  */
@@ -107,7 +107,7 @@ public class FileResource extends URLResource {
             return false;
 
         FileResource f = (FileResource) o;
-        return f._file == _file || (null != _file && _file.equals(f._file));
+        return f._file == _file || null != _file && _file.equals(f._file);
     }
 
     @Override

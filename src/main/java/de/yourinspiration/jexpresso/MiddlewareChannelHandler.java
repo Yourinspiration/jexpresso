@@ -1,9 +1,8 @@
 package de.yourinspiration.jexpresso;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
+import de.yourinspiration.jexpresso.transformer.JsonTransformer;
+import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,20 +11,19 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.Attribute;
+import org.pmw.tinylog.Logger;
 
 import java.util.List;
 
-import org.pmw.tinylog.Logger;
-
-import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
-import de.yourinspiration.jexpresso.transformer.JsonTransformer;
-import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * Handles the middleware chain.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
@@ -68,9 +66,8 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
 
     /**
      * Call the next middleware handler.
-     * 
-     * @param currentIndex
-     *            the index of the current finished handler
+     *
+     * @param currentIndex the index of the current finished handler
      */
     protected void next(final int currentIndex) {
         if (currentIndex < handlers.size() - 1) {
@@ -101,15 +98,15 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
             String renderedModel;
 
             switch (responseImpl.type()) {
-            case "application/json":
-                renderedModel = new JsonTransformer().render(model);
-                break;
-            case "text/html":
-                renderedModel = new HtmlTransformer().render(model);
-                break;
-            default:
-                renderedModel = new PlainTextTransformer().render(model);
-                break;
+                case "application/json":
+                    renderedModel = new JsonTransformer().render(model);
+                    break;
+                case "text/html":
+                    renderedModel = new HtmlTransformer().render(model);
+                    break;
+                default:
+                    renderedModel = new PlainTextTransformer().render(model);
+                    break;
             }
 
             Logger.debug("Rendered model {0}", renderedModel);

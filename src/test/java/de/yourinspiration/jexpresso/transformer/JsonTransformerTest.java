@@ -1,17 +1,15 @@
 package de.yourinspiration.jexpresso.transformer;
 
-import static org.junit.Assert.assertEquals;
-
+import de.yourinspiration.jexpresso.http.ContentType;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.yourinspiration.jexpresso.http.ContentType;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test case for {@link JsonTransformer}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class JsonTransformerTest {
 

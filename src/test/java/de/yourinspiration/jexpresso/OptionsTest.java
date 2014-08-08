@@ -1,16 +1,15 @@
 package de.yourinspiration.jexpresso;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.Map;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test case for {@link Options}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class OptionsTest {
 

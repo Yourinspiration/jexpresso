@@ -2,9 +2,8 @@ package de.yourinspiration.jexpresso;
 
 /**
  * Callback handler that is called after the server has started.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public interface StarterCallback {
 

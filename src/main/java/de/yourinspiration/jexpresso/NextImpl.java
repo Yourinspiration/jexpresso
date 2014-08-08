@@ -2,9 +2,8 @@ package de.yourinspiration.jexpresso;
 
 /**
  * Internal implementation for {@link Next}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class NextImpl implements Next {
 

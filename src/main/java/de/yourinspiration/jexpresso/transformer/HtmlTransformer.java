@@ -4,9 +4,8 @@ import de.yourinspiration.jexpresso.http.ContentType;
 
 /**
  * Transformer for text as HTML content type.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class HtmlTransformer implements ResponseTransformer {
 

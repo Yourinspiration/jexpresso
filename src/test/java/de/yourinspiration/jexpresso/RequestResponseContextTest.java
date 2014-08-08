@@ -1,27 +1,22 @@
 package de.yourinspiration.jexpresso;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.SET_COOKIE;
-import static org.junit.Assert.assertEquals;
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.DefaultCookie;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.ServerCookieEncoder;
-
-import java.net.InetSocketAddress;
-
+import io.netty.handler.codec.http.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.net.InetSocketAddress;
+
+import static io.netty.handler.codec.http.HttpHeaders.Names.SET_COOKIE;
+import static org.junit.Assert.assertEquals;
+
 /**
  * Test case for {@link RequestResponseContext}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class RequestResponseContextTest {
 

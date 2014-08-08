@@ -67,83 +67,78 @@ public class URIUtil implements Cloneable {
                 return null;
         }
 
-        synchronized (buf) {
-            if (bytes != null) {
-                for (int i = 0; i < bytes.length; i++) {
-                    byte c = bytes[i];
-                    switch (c) {
-                        case '%':
-                            buf.append("%25");
-                            continue;
-                        case '?':
-                            buf.append("%3F");
-                            continue;
-                        case ';':
-                            buf.append("%3B");
-                            continue;
-                        case '#':
-                            buf.append("%23");
-                            continue;
-                        case '"':
-                            buf.append("%22");
-                            continue;
-                        case '\'':
-                            buf.append("%27");
-                            continue;
-                        case '<':
-                            buf.append("%3C");
-                            continue;
-                        case '>':
-                            buf.append("%3E");
-                            continue;
-                        case ' ':
-                            buf.append("%20");
-                            continue;
-                        default:
-                            if (c < 0) {
-                                buf.append('%');
-                                toHex(c, buf);
-                            } else
-                                buf.append((char) c);
-                            continue;
-                    }
+        if (bytes != null) {
+            for (byte c : bytes) {
+                switch (c) {
+                    case '%':
+                        buf.append("%25");
+                        continue;
+                    case '?':
+                        buf.append("%3F");
+                        continue;
+                    case ';':
+                        buf.append("%3B");
+                        continue;
+                    case '#':
+                        buf.append("%23");
+                        continue;
+                    case '"':
+                        buf.append("%22");
+                        continue;
+                    case '\'':
+                        buf.append("%27");
+                        continue;
+                    case '<':
+                        buf.append("%3C");
+                        continue;
+                    case '>':
+                        buf.append("%3E");
+                        continue;
+                    case ' ':
+                        buf.append("%20");
+                        continue;
+                    default:
+                        if (c < 0) {
+                            buf.append('%');
+                            toHex(c, buf);
+                        } else
+                            buf.append((char) c);
                 }
+            }
 
-            } else {
-                for (int i = 0; i < path.length(); i++) {
-                    char c = path.charAt(i);
-                    switch (c) {
-                        case '%':
-                            buf.append("%25");
-                            continue;
-                        case '?':
-                            buf.append("%3F");
-                            continue;
-                        case ';':
-                            buf.append("%3B");
-                            continue;
-                        case '#':
-                            buf.append("%23");
-                            continue;
-                        case '"':
-                            buf.append("%22");
-                            continue;
-                        case '\'':
-                            buf.append("%27");
-                            continue;
-                        case '<':
-                            buf.append("%3C");
-                            continue;
-                        case '>':
-                            buf.append("%3E");
-                            continue;
-                        case ' ':
-                            buf.append("%20");
-                            continue;
-                        default:
-                            buf.append(c);
-                            continue;
-                    }
+        } else {
+            for (int i = 0; i < path.length(); i++) {
+                char c = path.charAt(i);
+                switch (c) {
+                    case '%':
+                        buf.append("%25");
+                        continue;
+                    case '?':
+                        buf.append("%3F");
+                        continue;
+                    case ';':
+                        buf.append("%3B");
+                        continue;
+                    case '#':
+                        buf.append("%23");
+                        continue;
+                    case '"':
+                        buf.append("%22");
+                        continue;
+                    case '\'':
+                        buf.append("%27");
+                        continue;
+                    case '<':
+                        buf.append("%3C");
+                        continue;
+                    case '>':
+                        buf.append("%3E");
+                        continue;
+                    case ' ':
+                        buf.append("%20");
+                        continue;
+                    default:
+                        buf.append(c);
                 }
             }
         }
@@ -250,21 +245,8 @@ public class URIUtil implements Cloneable {
      * @param c An ASCII encoded character 0-9 a-f A-F
      * @return The byte value of the character 0-16.
      */
-    public static byte convertHexDigit(byte c) {
-        byte b = (byte) ((c & 0x1f) + ((c >> 6) * 0x19) - 0x10);
-        if (b < 0 || b > 15)
-            throw new IllegalArgumentException("!hex " + c);
-        return b;
-    }
-
-    /**
-     * Converts hex to digit.
-     *
-     * @param c An ASCII encoded character 0-9 a-f A-F
-     * @return The byte value of the character 0-16.
-     */
     public static int convertHexDigit(int c) {
-        int d = ((c & 0x1f) + ((c >> 6) * 0x19) - 0x10);
+        int d = c & 0x1f + ((c >> 6) * 0x19) - 0x10;
         if (d < 0 || d > 15)
             throw new NumberFormatException("!hex " + c);
         return d;
@@ -279,9 +261,9 @@ public class URIUtil implements Cloneable {
     public static void toHex(byte b, Appendable buf) {
         try {
             int d = 0xf & ((0xF0 & b) >> 4);
-            buf.append((char) ((d > 9 ? ('A' - 10) : '0') + d));
+            buf.append((char) ((d > 9 ? 'A' - 10 : '0') + d));
             d = 0xf & b;
-            buf.append((char) ((d > 9 ? ('A' - 10) : '0') + d));
+            buf.append((char) ((d > 9 ? 'A' - 10 : '0') + d));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

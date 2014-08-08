@@ -41,7 +41,6 @@ public class FileCacheLoader extends CacheLoader<String, FileCacheEntry> {
         // Somehow there is a NPE when accessing a directory when compressed to
         // a JAR.
         try {
-            ;
             bytes = IOUtils.toByteArray(fileResource.getInputStream());
         } catch (NullPointerException npe) {
             return new FileCacheEntry(false, null, resource, System.currentTimeMillis(), false);

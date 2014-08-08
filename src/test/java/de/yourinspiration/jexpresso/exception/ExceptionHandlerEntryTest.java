@@ -1,24 +1,20 @@
 package de.yourinspiration.jexpresso.exception;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import de.yourinspiration.jexpresso.Request;
+import de.yourinspiration.jexpresso.Response;
+import de.yourinspiration.jexpresso.RouteHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import de.yourinspiration.jexpresso.Request;
-import de.yourinspiration.jexpresso.Response;
-import de.yourinspiration.jexpresso.RouteHandler;
+import static org.junit.Assert.*;
 
 /**
  * Test case for {@link ExceptionHandlerEntry}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class ExceptionHandlerEntryTest {
 

@@ -2,9 +2,8 @@ package de.yourinspiration.jexpresso.http;
 
 /**
  * Constants for common HTTP content types.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public enum ContentType {
 
@@ -37,7 +36,7 @@ public enum ContentType {
 
     /**
      * Get the text representation of the content type.
-     * 
+     *
      * @return the text representation of the content type
      */
     public String type() {

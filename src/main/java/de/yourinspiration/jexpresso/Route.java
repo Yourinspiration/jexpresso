@@ -7,9 +7,8 @@ import java.util.regex.Pattern;
 
 /**
  * Encapsulates the inforation about route mappings.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class Route {
 
@@ -53,7 +52,7 @@ public class Route {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((method == null) ? 0 : method.hashCode());
-        result = prime * result + ((path == null) ? 0 : path.hashCode());
+        result = prime * result + path.hashCode();
         return result;
     }
 
@@ -68,10 +67,7 @@ public class Route {
         Route other = (Route) obj;
         if (method != other.method)
             return false;
-        if (path == null) {
-            if (other.path != null)
-                return false;
-        } else if (!path.equals(other.path))
+        if (!path.equals(other.path))
             return false;
         return true;
     }

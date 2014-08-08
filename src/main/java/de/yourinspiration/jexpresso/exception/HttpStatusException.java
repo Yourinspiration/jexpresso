@@ -2,9 +2,8 @@ package de.yourinspiration.jexpresso.exception;
 
 /**
  * Base class for HTTP status exceptions.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public abstract class HttpStatusException extends RuntimeException {
 

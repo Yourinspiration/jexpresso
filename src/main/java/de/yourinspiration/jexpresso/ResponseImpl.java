@@ -19,9 +19,8 @@ import java.util.Map.Entry;
 
 /**
  * Implementation for {@link Response}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class ResponseImpl implements Response {
 

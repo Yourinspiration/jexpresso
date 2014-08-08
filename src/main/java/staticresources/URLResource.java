@@ -1,5 +1,7 @@
 package staticresources;
 
+import org.pmw.tinylog.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +30,7 @@ public class URLResource extends Resource {
             try {
                 _connection = _url.openConnection();
             } catch (IOException e) {
-
+                Logger.warn(e, "Error open connection");
             }
         }
         return _connection != null;
@@ -40,7 +42,7 @@ public class URLResource extends Resource {
             try {
                 _in.close();
             } catch (IOException e) {
-
+                Logger.warn(e, "Error closing stream");
             }
             _in = null;
         }
@@ -57,7 +59,7 @@ public class URLResource extends Resource {
                     _in = _connection.getInputStream();
             }
         } catch (IOException e) {
-
+            Logger.warn(e, "error open stream");
         }
         return _in != null;
     }
@@ -99,7 +101,7 @@ public class URLResource extends Resource {
         try {
             return new File(_url.getFile());
         } catch (Exception e) {
-
+            Logger.warn(e, "Error creating file");
         }
 
         // Don't know the file

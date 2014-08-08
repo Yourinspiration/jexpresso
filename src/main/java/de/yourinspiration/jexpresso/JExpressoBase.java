@@ -1,36 +1,31 @@
 package de.yourinspiration.jexpresso;
 
+import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pmw.tinylog.Logger;
-
-import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
-
 /**
  * Internal base class for a JExpresso application. Does not provide any public
  * API.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class JExpressoBase {
 
     private final List<Route> routes = new ArrayList<>();
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries = new ArrayList<>();
     private final Map<String, TemplateEngine> templateEngines = new HashMap<>();
-
-    private List<MiddlewareHandler> middlewareHandlers = new ArrayList<>();
-
     protected boolean started = false;
+    private List<MiddlewareHandler> middlewareHandlers = new ArrayList<>();
 
     protected JExpressoBase() {
     }

@@ -1,14 +1,13 @@
 package de.yourinspiration.jexpresso.http;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test case for {@link HttpStatus}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class HttpStatusTest {
 

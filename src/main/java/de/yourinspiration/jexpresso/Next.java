@@ -3,9 +3,8 @@ package de.yourinspiration.jexpresso;
 /**
  * Provides methods to call the next middleware handler or cancel the middleware
  * chain, in order to responde immediately to the client.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public interface Next {
 

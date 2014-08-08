@@ -1,20 +1,18 @@
 package de.yourinspiration.jexpresso;
 
 import io.netty.handler.codec.http.HttpMethod;
-
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Map;
+
 /**
  * Test case for {@link JExpresso}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class JExpressoTest {
 

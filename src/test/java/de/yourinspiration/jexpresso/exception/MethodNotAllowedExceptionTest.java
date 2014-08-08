@@ -1,14 +1,13 @@
 package de.yourinspiration.jexpresso.exception;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test case for {@link MethodNotAllowedException}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class MethodNotAllowedExceptionTest {
 

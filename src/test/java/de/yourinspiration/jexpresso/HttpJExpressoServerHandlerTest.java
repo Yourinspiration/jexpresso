@@ -1,22 +1,13 @@
 package de.yourinspiration.jexpresso;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
+import de.yourinspiration.jexpresso.exception.NotFoundException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.*;
 import io.netty.util.Attribute;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -24,23 +15,24 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
-import de.yourinspiration.jexpresso.exception.NotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 
 /**
  * Test case for {@link HttpJExpressoServerHandler}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class HttpJExpressoServerHandlerTest {
-
-    private HttpJExpressoServerHandler handler;
 
     private final List<Route> routes = new ArrayList<>();
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries = new ArrayList<>();
     private final Map<String, TemplateEngine> templateEngines = new HashMap<>();
-
+    private HttpJExpressoServerHandler handler;
     @Mock
     private ChannelHandlerContext ctx;
     @Mock
@@ -51,8 +43,6 @@ public class HttpJExpressoServerHandlerTest {
     private Attribute<RequestResponseContext> attribute;
     @Mock
     private RequestResponseContext reqResContext;
-
-    private ResponseImpl responseImpl;
 
     @Mock
     private FullHttpResponse fullHttpResponse;
@@ -69,7 +59,7 @@ public class HttpJExpressoServerHandlerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        responseImpl = new ResponseImpl(fullHttpResponse);
+        ResponseImpl responseImpl = new ResponseImpl(fullHttpResponse);
 
         Mockito.when(ctx.channel()).thenReturn(channel);
         Mockito.when(channel.attr(RequestResponseContext.ATTR_KEY)).thenReturn(attribute);

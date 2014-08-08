@@ -1,14 +1,13 @@
 package de.yourinspiration.jexpresso.http;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test case for {@link ContentType}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class ContentTypeTest {
 

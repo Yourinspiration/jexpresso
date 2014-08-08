@@ -2,16 +2,14 @@ package de.yourinspiration.jexpresso.exception;
 
 /**
  * Represents a HTTP 400 status.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class BadRequestException extends HttpStatusException {
 
-    private static final long serialVersionUID = -645544858331385287L;
-
     public static final int STATUS = 400;
     public static final String DEFAULT_MSG = "Bad request";
+    private static final long serialVersionUID = -645544858331385287L;
 
     public BadRequestException() {
         super(STATUS, DEFAULT_MSG);

@@ -8,10 +8,6 @@ import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.util.Attribute;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -19,16 +15,18 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Test case for {@link MiddlewareChannelHandler}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class MiddlewareChannelHandlerTest {
 
+    private final List<MiddlewareHandler> handlers = new ArrayList<>();
     private MiddlewareChannelHandler handler;
-
     @Mock
     private ChannelHandlerContext ctx;
     @Mock
@@ -45,8 +43,6 @@ public class MiddlewareChannelHandlerTest {
     private ByteBuf byteBuf;
     @Mock
     private ChannelFuture channelFuture;
-
-    private final List<MiddlewareHandler> handlers = new ArrayList<>();
 
     @Before
     public void setUp() {

@@ -1,25 +1,7 @@
 package de.yourinspiration.jexpresso;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.DefaultCookie;
-import io.netty.handler.codec.http.DefaultHttpHeaders;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.ServerCookieEncoder;
-
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-
+import io.netty.handler.codec.http.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -27,11 +9,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+
 /**
  * Test case for {@link RequestImpl}.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class RequestImplTest {
 

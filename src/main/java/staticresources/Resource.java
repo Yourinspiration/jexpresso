@@ -32,8 +32,7 @@ public abstract class Resource {
 
         if (url_string.startsWith(FILE_RESOURCE_PREFIX)) {
             try {
-                FileResource fileResource = new FileResource(url);
-                return fileResource;
+                return new FileResource(url);
             } catch (Exception e) {
                 return new BadResource(url, e.toString());
             }

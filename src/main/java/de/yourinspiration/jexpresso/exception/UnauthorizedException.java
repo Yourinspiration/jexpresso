@@ -2,16 +2,14 @@ package de.yourinspiration.jexpresso.exception;
 
 /**
  * Represents a HTTP 401 status.
- * 
- * @author Marcel Härle
  *
+ * @author Marcel Härle
  */
 public class UnauthorizedException extends HttpStatusException {
 
-    private static final long serialVersionUID = -6389042529808259602L;
-
     public static final int STATUS = 401;
     public static final String DEFAULT_MSG = "Unauthorized";
+    private static final long serialVersionUID = -6389042529808259602L;
 
     public UnauthorizedException() {
         super(STATUS, DEFAULT_MSG);
