@@ -1,8 +1,8 @@
 package de.yourinspiration.jexpresso.exception;
 
-import de.yourinspiration.jexpresso.Request;
-import de.yourinspiration.jexpresso.Response;
-import de.yourinspiration.jexpresso.RouteHandler;
+import de.yourinspiration.jexpresso.core.Request;
+import de.yourinspiration.jexpresso.core.Response;
+import de.yourinspiration.jexpresso.core.RouteHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

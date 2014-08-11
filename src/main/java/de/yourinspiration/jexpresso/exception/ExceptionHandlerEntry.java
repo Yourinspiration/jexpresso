@@ -1,8 +1,8 @@
 package de.yourinspiration.jexpresso.exception;
 
-import de.yourinspiration.jexpresso.Request;
-import de.yourinspiration.jexpresso.Response;
-import de.yourinspiration.jexpresso.RouteHandler;
+import de.yourinspiration.jexpresso.core.Request;
+import de.yourinspiration.jexpresso.core.Response;
+import de.yourinspiration.jexpresso.core.RouteHandler;
 
 /**
  * Aggregates the information for exception callback handlers.
