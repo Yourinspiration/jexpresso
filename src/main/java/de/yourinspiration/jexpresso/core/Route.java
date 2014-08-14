@@ -27,7 +27,7 @@ public class Route {
 
     public boolean matchesPathAndMethod(final String pathToMatch, final HttpMethod method) {
         final Matcher m = pathPattern.matcher(pathToMatch);
-        return method.equals(this.method) && m.matches();
+        return path.split("/").length == pathToMatch.split("/").length && method.equals(this.method) && m.matches();
     }
 
     public void handle(final Request request, final Response response) {

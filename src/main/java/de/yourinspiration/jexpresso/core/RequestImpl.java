@@ -75,7 +75,12 @@ public class RequestImpl implements Request {
 
         for (int i = 0, l = currentPathTokens.length; i < l; i++) {
             if (pathTokens[i].startsWith(":")) {
-                params.put(pathTokens[i].replace(":", ""), currentPathTokens[i]);
+                int queryIndex = currentPathTokens[i].lastIndexOf("?");
+                if (queryIndex > 0) {
+                    params.put(pathTokens[i].replace(":", ""), currentPathTokens[i].substring(0, queryIndex));
+                } else {
+                    params.put(pathTokens[i].replace(":", ""), currentPathTokens[i]);
+                }
             }
         }
 

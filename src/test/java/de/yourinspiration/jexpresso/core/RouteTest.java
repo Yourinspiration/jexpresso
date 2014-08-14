@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  */
 public class RouteTest {
 
-    private final String path = "/test/path";
+    private final String path = "/test/path/:id";
     private final HttpMethod method = HttpMethod.GET;
     private Route route;
     @Mock
@@ -35,9 +35,9 @@ public class RouteTest {
 
     @Test
     public void testMatchesPathAndMethod() {
-        assertTrue(route.matchesPathAndMethod("/test/path", HttpMethod.GET));
-        assertFalse(route.matchesPathAndMethod("/test/path/false", HttpMethod.GET));
-        assertFalse(route.matchesPathAndMethod("/test/path/false", HttpMethod.PUT));
+        assertTrue(route.matchesPathAndMethod("/test/path/123", HttpMethod.GET));
+        assertFalse(route.matchesPathAndMethod("/test/path/something/123", HttpMethod.GET));
+        assertFalse(route.matchesPathAndMethod("/test/path/something/123", HttpMethod.PUT));
         assertFalse(route.matchesPathAndMethod("/test/path", HttpMethod.POST));
     }
 

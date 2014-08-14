@@ -100,6 +100,22 @@ public class RequestImplTest {
     }
 
     @Test
+    public void testParamWithQueryParam() {
+        final Route route = new Route("/customer/:id", HttpMethod.GET, new RouteHandler() {
+
+            @Override
+            public void handle(Request request, Response response) {
+            }
+        });
+
+        requestImpl.setRoute(route);
+
+        Mockito.when(fullHttpRequest.getUri()).thenReturn("/customer/123?token=asldkjasldkjalskdjalskdj");
+
+        assertEquals("123", requestImpl.param("id"));
+    }
+
+    @Test
     public void testQuery() {
         Mockito.when(fullHttpRequest.getUri()).thenReturn("/customer?name=Max&age=21");
 
