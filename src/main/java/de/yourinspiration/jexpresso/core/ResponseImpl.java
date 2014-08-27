@@ -142,7 +142,7 @@ public class ResponseImpl implements Response {
         if (content instanceof String) {
             type(ContentType.TEXT_HTML.type());
         } else {
-            type(ContentType.APPLICATION_JSON.type());
+            type(ContentType.APPLICATION_JSON);
         }
     }
 
@@ -153,7 +153,7 @@ public class ResponseImpl implements Response {
         if (content instanceof String) {
             type(ContentType.TEXT_HTML.type());
         } else {
-            type(ContentType.APPLICATION_JSON.type());
+            type(ContentType.APPLICATION_JSON);
         }
     }
 
@@ -161,7 +161,7 @@ public class ResponseImpl implements Response {
     public void send(final byte[] content) {
         this.bytes = content;
         this.isBinary = true;
-        type(ContentType.APPLICATION_OCTETSTREAM.type());
+        type(ContentType.APPLICATION_OCTETSTREAM);
     }
 
     @Override
@@ -174,12 +174,13 @@ public class ResponseImpl implements Response {
     public void send(final HttpStatus status) {
         status(status);
         send(status.getReasonPhrase());
+        type(ContentType.TEXT_PLAIN);
     }
 
     @Override
     public void json(final Object content) {
         this.content = content;
-        type(ContentType.APPLICATION_JSON.type());
+        type(ContentType.APPLICATION_JSON);
     }
 
     @Override
@@ -206,6 +207,11 @@ public class ResponseImpl implements Response {
     }
 
     @Override
+    public void type(final ContentType type) {
+        fullHttpResponse.headers().set(HttpHeaders.Names.CONTENT_TYPE, type.type());
+    }
+
+    @Override
     public String type() {
         return fullHttpResponse.headers().get(HttpHeaders.Names.CONTENT_TYPE);
     }
@@ -217,7 +223,7 @@ public class ResponseImpl implements Response {
 
     @Override
     public void render(final String template, final Map<String, Object> options) {
-        type(ContentType.TEXT_HTML.type());
+        type(ContentType.TEXT_HTML);
         this.template = template;
         this.options = options;
         this.isTemplate = true;
