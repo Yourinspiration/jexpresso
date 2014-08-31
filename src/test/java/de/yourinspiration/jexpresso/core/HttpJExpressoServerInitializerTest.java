@@ -1,6 +1,8 @@
 package de.yourinspiration.jexpresso.core;
 
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
+import de.yourinspiration.jexpresso.http.ContentType;
+import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpContentCompressor;
@@ -30,9 +32,10 @@ public class HttpJExpressoServerInitializerTest {
         final List<ExceptionHandlerEntry> exceptionHandlerEntries = new ArrayList<>();
         final Map<String, TemplateEngine> templateEngines = new HashMap<>();
         final List<MiddlewareHandler> middlewareHandlers = new ArrayList<>();
+        final Map<ContentType, ResponseTransformer> responseTransformerMap = new HashMap<>();
 
         final HttpJExpressoServerInitializer initializer = new HttpJExpressoServerInitializer(routes,
-                exceptionHandlerEntries, middlewareHandlers, templateEngines);
+                exceptionHandlerEntries, middlewareHandlers, templateEngines, responseTransformerMap);
 
         final Channel ch = Mockito.mock(Channel.class);
         final ChannelPipeline p = Mockito.mock(ChannelPipeline.class);

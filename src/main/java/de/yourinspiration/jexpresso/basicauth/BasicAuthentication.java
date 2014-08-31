@@ -5,6 +5,7 @@ import de.yourinspiration.jexpresso.core.MiddlewareHandler;
 import de.yourinspiration.jexpresso.core.Next;
 import de.yourinspiration.jexpresso.core.Request;
 import de.yourinspiration.jexpresso.core.Response;
+import de.yourinspiration.jexpresso.http.ContentType;
 import de.yourinspiration.jexpresso.http.HttpStatus;
 import io.netty.handler.codec.http.HttpMethod;
 import org.pmw.tinylog.Logger;
@@ -19,7 +20,7 @@ import java.util.List;
  *
  * @author Marcel Härle
  */
-public class BasicAuthentation implements MiddlewareHandler {
+public class BasicAuthentication implements MiddlewareHandler {
 
     public static final String USER_DETAILS_ATTR = "userDetails";
 
@@ -34,7 +35,7 @@ public class BasicAuthentation implements MiddlewareHandler {
      * @param userDetailsService the user details service to retrieve user credentials
      * @param passwordEncoder    the password encoder to check the passwords
      */
-    public BasicAuthentation(final UserDetailsService userDetailsService, final PasswordEncoder passwordEncoder) {
+    public BasicAuthentication(final UserDetailsService userDetailsService, final PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -89,7 +90,7 @@ public class BasicAuthentation implements MiddlewareHandler {
     private void handleUnauthenticated(final Response response) {
         response.status(HttpStatus.UNAUTHORIZED);
         response.set("WWW-Authenticate", "Basic realm=\"sparkle realm\"");
-        response.type("text/plain");
+        response.type(ContentType.TEXT_PLAIN);
         response.send("");
     }
 

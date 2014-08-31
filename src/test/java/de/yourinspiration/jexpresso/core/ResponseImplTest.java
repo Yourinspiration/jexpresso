@@ -1,5 +1,6 @@
 package de.yourinspiration.jexpresso.core;
 
+import de.yourinspiration.jexpresso.http.ContentType;
 import de.yourinspiration.jexpresso.http.HttpStatus;
 import io.netty.handler.codec.http.*;
 import org.junit.Before;
@@ -271,13 +272,23 @@ public class ResponseImplTest {
     }
 
     @Test
-    public void testSetType() {
+    public void testSetTypeAsString() {
         final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
         Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
 
         responseImpl.type("application/json");
 
         Mockito.verify(headers).set(CONTENT_TYPE, "application/json");
+    }
+
+    @Test
+    public void testSetType() {
+        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
+        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
+
+        responseImpl.type(ContentType.TEXT_PLAIN);
+
+        Mockito.verify(headers).set(CONTENT_TYPE, ContentType.TEXT_PLAIN.type());
     }
 
     @Test

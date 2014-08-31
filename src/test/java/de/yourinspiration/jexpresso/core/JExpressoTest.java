@@ -1,13 +1,13 @@
 package de.yourinspiration.jexpresso.core;
 
+import de.yourinspiration.jexpresso.http.ContentType;
+import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.handler.codec.http.HttpMethod;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Map;
 
 /**
  * Test case for {@link de.yourinspiration.jexpresso.core.JExpresso}.
@@ -29,11 +29,7 @@ public class JExpressoTest {
 
     @Test
     public void testGet() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.get("/path", handler);
@@ -43,11 +39,7 @@ public class JExpressoTest {
 
     @Test
     public void testPost() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.post("/path", handler);
@@ -57,11 +49,7 @@ public class JExpressoTest {
 
     @Test
     public void testHead() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.head("/path", handler);
@@ -71,11 +59,7 @@ public class JExpressoTest {
 
     @Test
     public void testPut() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.put("/path", handler);
@@ -85,11 +69,7 @@ public class JExpressoTest {
 
     @Test
     public void testOptions() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.options("/path", handler);
@@ -99,11 +79,7 @@ public class JExpressoTest {
 
     @Test
     public void testDelete() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.delete("/path", handler);
@@ -113,11 +89,7 @@ public class JExpressoTest {
 
     @Test
     public void testTrace() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.trace("/path", handler);
@@ -127,11 +99,7 @@ public class JExpressoTest {
 
     @Test
     public void testConnect() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.connect("/path", handler);
@@ -141,13 +109,7 @@ public class JExpressoTest {
 
     @Test
     public void testEngine() {
-        final TemplateEngine templateEngine = new TemplateEngine() {
-
-            @Override
-            public String render(String template, Map<String, Object> options) {
-                return null;
-            }
-        };
+        final TemplateEngine templateEngine = (template, options) -> null;
 
         jexpresso.engine("hbs", templateEngine);
 
@@ -156,11 +118,7 @@ public class JExpressoTest {
 
     @Test
     public void testException() {
-        final RouteHandler handler = new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final RouteHandler handler = (request, response) -> {
         };
 
         jexpresso.exception(RuntimeException.class, handler);
@@ -170,12 +128,8 @@ public class JExpressoTest {
 
     @Test
     public void testUse() {
-        final MiddlewareHandler handler = new MiddlewareHandler() {
+        final MiddlewareHandler handler = (request, response, next) -> {
 
-            @Override
-            public void handle(Request request, Response response, Next next) {
-
-            }
         };
 
         jexpresso.use(handler);
@@ -203,6 +157,25 @@ public class JExpressoTest {
 
         Mockito.verify(base).startNetty(8888);
         Mockito.verify(starterCallback).handle();
+    }
+
+    @Test
+    public void testSetTransformer() {
+        final ResponseTransformer customResponseTransformer = new ResponseTransformer() {
+            @Override
+            public String render(Object model) {
+                return ">>>" + model.toString() + "<<<";
+            }
+
+            @Override
+            public ContentType contentType() {
+                return ContentType.TEXT_PLAIN;
+            }
+        };
+
+        jexpresso.setTransformer(customResponseTransformer);
+
+        Mockito.verify(base).setTransformer(customResponseTransformer);
     }
 
 }

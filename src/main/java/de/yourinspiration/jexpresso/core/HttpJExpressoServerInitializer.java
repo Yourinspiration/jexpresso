@@ -1,6 +1,8 @@
 package de.yourinspiration.jexpresso.core;
 
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
+import de.yourinspiration.jexpresso.http.ContentType;
+import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -25,14 +27,17 @@ public class HttpJExpressoServerInitializer extends ChannelInitializer<Channel> 
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries;
     private final Map<String, TemplateEngine> templateEngines;
     private final List<MiddlewareHandler> middlewareHandlers;
+    private final Map<ContentType, ResponseTransformer> responseTransformerMap;
 
     protected HttpJExpressoServerInitializer(final List<Route> routes,
                                              final List<ExceptionHandlerEntry> exceptionHandlerEntries,
-                                             final List<MiddlewareHandler> middlewareHandlers, final Map<String, TemplateEngine> templateEngines) {
+                                             final List<MiddlewareHandler> middlewareHandlers, final Map<String, TemplateEngine> templateEngines,
+                                             final Map<ContentType, ResponseTransformer> responseTransformerMap) {
         this.routes = routes;
         this.exceptionHandlerEntries = exceptionHandlerEntries;
         this.middlewareHandlers = middlewareHandlers;
         this.templateEngines = templateEngines;
+        this.responseTransformerMap = responseTransformerMap;
     }
 
     @Override
@@ -43,6 +48,6 @@ public class HttpJExpressoServerInitializer extends ChannelInitializer<Channel> 
         p.addLast(new HttpResponseEncoder());
         p.addLast(new HttpContentCompressor());
         p.addLast(new MiddlewareChannelHandler(middlewareHandlers), new HttpJExpressoServerHandler(routes,
-                exceptionHandlerEntries, templateEngines));
+                exceptionHandlerEntries, templateEngines, responseTransformerMap));
     }
 }

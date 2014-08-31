@@ -17,13 +17,13 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 
 /**
- * Test case for {@link BasicAuthentation}.
+ * Test case for {@link BasicAuthentication}.
  *
  * @author Marcel Härle
  */
-public class BasicAuthentationTest {
+public class BasicAuthenticationTest {
 
-    private BasicAuthentation basicAuthentication;
+    private BasicAuthentication basicAuthentication;
 
     @Mock
     private UserDetailsService userDetailsService;
@@ -41,7 +41,7 @@ public class BasicAuthentationTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        basicAuthentication = new BasicAuthentation(userDetailsService, passwordEncoder);
+        basicAuthentication = new BasicAuthentication(userDetailsService, passwordEncoder);
     }
 
     @Test

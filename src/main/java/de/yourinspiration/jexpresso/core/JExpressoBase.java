@@ -1,6 +1,11 @@
 package de.yourinspiration.jexpresso.core;
 
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
+import de.yourinspiration.jexpresso.http.ContentType;
+import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
+import de.yourinspiration.jexpresso.transformer.JsonTransformer;
+import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
+import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -25,34 +30,35 @@ public class JExpressoBase {
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries = new ArrayList<>();
     private final Map<String, TemplateEngine> templateEngines = new HashMap<>();
     private final List<MiddlewareHandler> middlewareHandlers = new ArrayList<>();
-    protected boolean started = false;
+    private final Map<ContentType, ResponseTransformer> responseTransformerMap = new HashMap<>();
 
     protected JExpressoBase() {
+        // Init default response transformers
+        responseTransformerMap.put(ContentType.APPLICATION_JSON, new JsonTransformer());
+        responseTransformerMap.put(ContentType.TEXT_HTML, new HtmlTransformer());
+        responseTransformerMap.put(ContentType.TEXT_PLAIN, new PlainTextTransformer());
     }
 
     protected void startNetty(final int port) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Configure the server.
-                EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-                EventLoopGroup workerGroup = new NioEventLoopGroup();
-                try {
-                    ServerBootstrap b = new ServerBootstrap();
-                    b.group(bossGroup, workerGroup)
-                            .channel(NioServerSocketChannel.class)
-                            .childHandler(
-                                    new HttpJExpressoServerInitializer(routes, exceptionHandlerEntries,
-                                            middlewareHandlers, templateEngines));
+        new Thread(() -> {
+            // Configure the server.
+            EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+            EventLoopGroup workerGroup = new NioEventLoopGroup();
+            try {
+                ServerBootstrap b = new ServerBootstrap();
+                b.group(bossGroup, workerGroup)
+                        .channel(NioServerSocketChannel.class)
+                        .childHandler(
+                                new HttpJExpressoServerInitializer(routes, exceptionHandlerEntries,
+                                        middlewareHandlers, templateEngines, responseTransformerMap));
 
-                    Channel ch = b.bind(port).sync().channel();
-                    ch.closeFuture().sync();
-                } catch (Exception e) {
-                    Thread.currentThread().interrupt();
-                } finally {
-                    bossGroup.shutdownGracefully();
-                    workerGroup.shutdownGracefully();
-                }
+                Channel ch = b.bind(port).sync().channel();
+                ch.closeFuture().sync();
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                bossGroup.shutdownGracefully();
+                workerGroup.shutdownGracefully();
             }
         }).start();
     }
@@ -82,4 +88,7 @@ public class JExpressoBase {
         templateEngines.put(ext, templateEngine);
     }
 
+    public void setTransformer(final ResponseTransformer responseTransformer) {
+        responseTransformerMap.put(responseTransformer.contentType(), responseTransformer);
+    }
 }

@@ -1,5 +1,6 @@
 package de.yourinspiration.jexpresso.core;
 
+import de.yourinspiration.jexpresso.http.ContentType;
 import de.yourinspiration.jexpresso.http.HttpStatus;
 import io.netty.handler.codec.http.Cookie;
 
@@ -163,12 +164,19 @@ public interface Response {
     void jsonp(HttpStatus status, Object content);
 
     /**
-     * Sets the Content-Type to the mime lookup of type, or when "/" is present
-     * the Content-Type is simply set to this literal value.
+     * Sets the Content-Type.
+     *
+     * @param type the Content-Type to be set
+     * @deprecated use {@link #type(de.yourinspiration.jexpresso.http.ContentType) type}
+     */
+    void type(String type);
+
+    /**
+     * Sets the Content-Type.
      *
      * @param type the Content-Type to be set
      */
-    void type(String type);
+    void type(ContentType type);
 
     /**
      * Get the Content-Type.
