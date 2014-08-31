@@ -11,9 +11,7 @@ import java.net.URLConnection;
 import java.security.Permission;
 
 /**
- * File Resource.
- * <p/>
- * Handle resources of implied or explicit file type. This class can check for
+ * File Resource. Handle resources of implied or explicit file type. This class can check for
  * aliasing in the filesystem (eg case insensitivity).
  */
 public class FileResource extends URLResource {

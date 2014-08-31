@@ -7,9 +7,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * Bad Resource.
- * <p/>
- * A Resource that is returned for a bade URL. Acts as a resource that does not
+ * Bad Resource. A Resource that is returned for a bade URL. Acts as a resource that does not
  * exist and throws appropriate exceptions.
  */
 class BadResource extends URLResource {
