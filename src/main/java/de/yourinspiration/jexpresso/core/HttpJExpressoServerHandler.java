@@ -4,8 +4,6 @@ import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 import de.yourinspiration.jexpresso.exception.HttpStatusException;
 import de.yourinspiration.jexpresso.http.ContentType;
 import de.yourinspiration.jexpresso.http.HttpStatus;
-import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
-import de.yourinspiration.jexpresso.transformer.JsonTransformer;
 import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
 import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.buffer.Unpooled;
@@ -17,7 +15,6 @@ import io.netty.util.Attribute;
 import io.netty.util.CharsetUtil;
 import org.pmw.tinylog.Logger;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +27,6 @@ import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
  */
 public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
-    public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
-    public static final int HTTP_CACHE_SECONDS = 60;
     private static final byte[] EMPTY_BYTES = new byte[0];
 
     private final List<Route> routes;
@@ -144,7 +138,6 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
      * @param response the current response
      * @return returns <code>true</code> if a matching route was found,
      * otherwise <code>false</code>
-     * @throws IOException
      */
     private boolean findAndCallRoute(final RequestImpl request, final ResponseImpl response) {
         for (Route route : routes) {

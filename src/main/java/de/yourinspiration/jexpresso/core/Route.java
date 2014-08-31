@@ -65,9 +65,7 @@ public class Route {
         if (getClass() != obj.getClass())
             return false;
         Route other = (Route) obj;
-        if (method != other.method)
-            return false;
-        return path.equals(other.path);
+        return method.equals(other.method) && path.equals(other.path);
     }
 
 }

@@ -1,5 +1,6 @@
 package de.yourinspiration.jexpresso.core;
 
+import de.yourinspiration.jexpresso.exception.BadRequestException;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.*;
 import org.junit.Before;
@@ -64,13 +65,18 @@ public class RequestImplTest {
         assertEquals("Max", customer.name);
     }
 
+    @Test(expected = BadRequestException.class)
+    public void testJsonForInvalidJson() {
+        final ByteBuf byteBuf = Mockito.mock(ByteBuf.class);
+        Mockito.when(byteBuf.toString(Matchers.any(Charset.class))).thenReturn("{\"name\":Max");
+        Mockito.when(fullHttpRequest.content()).thenReturn(byteBuf);
+
+        requestImpl.json(Customer.class);
+    }
+
     @Test
     public void testParams() {
-        final Route route = new Route("/customer/:id", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final Route route = new Route("/customer/:id", HttpMethod.GET, (request, response) -> {
         });
 
         requestImpl.setRoute(route);
@@ -85,11 +91,7 @@ public class RequestImplTest {
 
     @Test
     public void testParam() {
-        final Route route = new Route("/customer/:id", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final Route route = new Route("/customer/:id", HttpMethod.GET, (request, response) -> {
         });
 
         requestImpl.setRoute(route);
@@ -101,11 +103,7 @@ public class RequestImplTest {
 
     @Test
     public void testParamWithQueryParam() {
-        final Route route = new Route("/customer/:id", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-            }
+        final Route route = new Route("/customer/:id", HttpMethod.GET, (request, response) -> {
         });
 
         requestImpl.setRoute(route);

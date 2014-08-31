@@ -62,14 +62,14 @@ Latest stable release:
 <dependency>
   <groupId>de.yourinspiration</groupId>
   <artifactId>jexpresso</artifactId>
-  <version>1.4.0</version>
+  <version>1.4.1</version>
 </dependency>
 ```
 
 ## Gradle
 
 ```
-compile 'de.yourinspiration:jexpresso:1.4.0'
+compile 'de.yourinspiration:jexpresso:1.4.1'
 ```
 
 ## New features in 1.4.0

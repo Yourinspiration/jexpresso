@@ -8,6 +8,7 @@ import io.netty.util.CharsetUtil;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
@@ -64,7 +65,7 @@ public class RequestImpl implements Request {
         try {
             return gson.fromJson(body(), clazz);
         } catch (JsonSyntaxException jsonException) {
-            throw new BadRequestException(jsonException.getMessage());
+            throw new BadRequestException("invalid json: " + body());
         }
     }
 
@@ -124,9 +125,7 @@ public class RequestImpl implements Request {
         String cookieString = fullHttpRequest.headers().get(COOKIE);
         if (cookieString != null) {
             Set<Cookie> decoded = CookieDecoder.decode(cookieString);
-            for (Cookie cookie : decoded) {
-                cookies.add(cookie);
-            }
+            cookies.addAll(decoded.stream().collect(Collectors.toList()));
         }
         for (Cookie cookie : customCookies) {
             for (int i = 0, l = cookies.size(); i < l; i++) {
@@ -240,15 +239,7 @@ public class RequestImpl implements Request {
 
     private String acceptsHeader(final String[] headersTokens, final String... types) {
         // We need an ordered map, ordered by the qualifiers
-        final Map<String, List<String>> qualifiedHeaders = new TreeMap<>(new Comparator<String>() {
-
-            @Override
-            public int compare(String o1, String o2) {
-                // Because q=1.0 is before q=0.9 we must order the other way
-                // round. The natural order would put q=1.0 after q=0.9
-                return o2.compareTo(o1);
-            }
-        });
+        final Map<String, List<String>> qualifiedHeaders = new TreeMap<>((o1, o2) -> o2.compareTo(o1));
 
         for (String headersToken : headersTokens) {
             // Types may have a qualifier or not. If the type has no
