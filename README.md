@@ -62,20 +62,7 @@ Latest stable release:
 <dependency>
   <groupId>de.yourinspiration</groupId>
   <artifactId>jexpresso</artifactId>
-  <version>1.1.1</version>
+  <version>1.4.0</version>
 </dependency>
 ```
 
-## Middleware
-
-### Session support
-
-[JExpresso Session](https://github.com/Yourinspiration/jexpresso-session)
-
-### Static resources
-
-[JExpresso Static Resources](https://github.com/Yourinspiration/jexpresso-static-resources)
-
-### Basic authentication
-
-[JExpresso Basic Authencation](https://github.com/Yourinspiration/jexpresso-basic-auth)
