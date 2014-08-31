@@ -1,6 +1,8 @@
 package de.yourinspiration.jexpresso.core;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import de.yourinspiration.jexpresso.exception.BadRequestException;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
@@ -43,10 +45,6 @@ public class RequestImpl implements Request {
         return fullHttpRequest;
     }
 
-    protected RequestResponseContext context() {
-        return requestResponseContext;
-    }
-
     // ================================================================
     // API ============================================================
     // ================================================================
@@ -63,7 +61,11 @@ public class RequestImpl implements Request {
 
     @Override
     public <T> T json(Class<T> clazz) {
-        return gson.fromJson(body(), clazz);
+        try {
+            return gson.fromJson(body(), clazz);
+        } catch (JsonSyntaxException jsonException) {
+            throw new BadRequestException(jsonException.getMessage());
+        }
     }
 
     @Override
