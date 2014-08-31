@@ -66,3 +66,19 @@ Latest stable release:
 </dependency>
 ```
 
+## Gradle
+
+```
+compile 'de.yourinspiration:jexpresso:1.4.0'
+```
+
+## New features in 1.4.0
+
+You can now "override" the default response transformers. That means that you can use your own transformer to
+handle a specific content type. This is very cool when your language comes with its own library to transform
+objects to JSON, like [groovy](http://groovy.codehaus.org/) or [golo](http://golo-lang.org/).
+
+```
+jexpresso.setTransformer(yourCustomerResponseTransformer);
+```
+
