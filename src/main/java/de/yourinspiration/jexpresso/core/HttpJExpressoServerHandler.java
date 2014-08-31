@@ -7,6 +7,7 @@ import de.yourinspiration.jexpresso.http.HttpStatus;
 import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
 import de.yourinspiration.jexpresso.transformer.JsonTransformer;
 import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
+import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,15 +38,19 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
     private final List<Route> routes;
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries;
     private final Map<String, TemplateEngine> templateEngines;
+    private final Map<ContentType, ResponseTransformer> responseTransformerMap;
 
     private RequestImpl requestImpl;
     private ResponseImpl responseImpl;
 
     protected HttpJExpressoServerHandler(final List<Route> routes,
-                                         final List<ExceptionHandlerEntry> exceptionHandlerEntries, final Map<String, TemplateEngine> templateEngines) {
+                                         final List<ExceptionHandlerEntry> exceptionHandlerEntries,
+                                         final Map<String, TemplateEngine> templateEngines,
+                                         final Map<ContentType, ResponseTransformer> responseTransformerMap) {
         this.routes = routes;
         this.exceptionHandlerEntries = exceptionHandlerEntries;
         this.templateEngines = templateEngines;
+        this.responseTransformerMap = responseTransformerMap;
     }
 
     @Override
@@ -231,19 +236,23 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
     }
 
     private String renderModel(final ResponseImpl response, final Object model) {
-        String renderedModel;
+        ResponseTransformer responseTransformer = new PlainTextTransformer();
+
         switch (response.type()) {
             case "application/json":
-                renderedModel = new JsonTransformer().render(model);
+                if (responseTransformerMap.get(ContentType.APPLICATION_JSON) != null) {
+                    responseTransformer = responseTransformerMap.get(ContentType.APPLICATION_JSON);
+                }
                 break;
             case "text/html":
-                renderedModel = new HtmlTransformer().render(model);
+                if (responseTransformerMap.get(ContentType.TEXT_HTML) != null) {
+                    responseTransformer = responseTransformerMap.get(ContentType.TEXT_HTML);
+                }
                 break;
             default:
-                renderedModel = new PlainTextTransformer().render(model);
                 break;
         }
-        return renderedModel;
+        return responseTransformer.render(model);
     }
 
     private void sendNotFound(final ChannelHandlerContext ctx, final ResponseImpl responseImpl) {

@@ -1,6 +1,7 @@
 package de.yourinspiration.jexpresso.core;
 
 import de.yourinspiration.jexpresso.staticresources.StaticResources;
+import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.handler.codec.http.HttpMethod;
 
 /**
@@ -176,6 +177,15 @@ public class JExpresso {
      */
     public void staticResources(final String folder, final boolean useCache) {
         base.addMiddleware(new StaticResources(folder, useCache));
+    }
+
+    /**
+     * Set a custom {@link de.yourinspiration.jexpresso.transformer.ResponseTransformer}.
+     *
+     * @param responseTransformer the customer response transformer to be set
+     */
+    public void setTransformer(final ResponseTransformer responseTransformer) {
+        base.setTransformer(responseTransformer);
     }
 
 }

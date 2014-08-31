@@ -2,6 +2,11 @@ package de.yourinspiration.jexpresso.core;
 
 import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 import de.yourinspiration.jexpresso.exception.NotFoundException;
+import de.yourinspiration.jexpresso.http.ContentType;
+import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
+import de.yourinspiration.jexpresso.transformer.JsonTransformer;
+import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
+import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -32,6 +37,7 @@ public class HttpJExpressoServerHandlerTest {
     private final List<Route> routes = new ArrayList<>();
     private final List<ExceptionHandlerEntry> exceptionHandlerEntries = new ArrayList<>();
     private final Map<String, TemplateEngine> templateEngines = new HashMap<>();
+    private final Map<ContentType, ResponseTransformer> responseTransformerMap = new HashMap<>();
     private HttpJExpressoServerHandler handler;
     @Mock
     private ChannelHandlerContext ctx;
@@ -59,6 +65,10 @@ public class HttpJExpressoServerHandlerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        responseTransformerMap.put(ContentType.APPLICATION_JSON, new JsonTransformer());
+        responseTransformerMap.put(ContentType.TEXT_HTML, new HtmlTransformer());
+        responseTransformerMap.put(ContentType.TEXT_PLAIN, new PlainTextTransformer());
+
         ResponseImpl responseImpl = new ResponseImpl(fullHttpResponse);
 
         Mockito.when(ctx.channel()).thenReturn(channel);
@@ -71,7 +81,7 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(fullHttpResponse.headers()).thenReturn(httpHeaders);
         Mockito.when(fullHttpResponse.content()).thenReturn(byteBuf);
 
-        handler = new HttpJExpressoServerHandler(routes, exceptionHandlerEntries, templateEngines);
+        handler = new HttpJExpressoServerHandler(routes, exceptionHandlerEntries, templateEngines, responseTransformerMap);
     }
 
     @Test
