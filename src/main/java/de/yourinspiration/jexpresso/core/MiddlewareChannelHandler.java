@@ -1,5 +1,6 @@
 package de.yourinspiration.jexpresso.core;
 
+import de.yourinspiration.jexpresso.http.ContentType;
 import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
 import de.yourinspiration.jexpresso.transformer.JsonTransformer;
 import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
@@ -86,7 +87,13 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
      * Cancel the request-response-chain and respond immediately to the client.
      */
     protected void cancel() {
-        responseImpl.fullHttpReponse().headers().set(CONTENT_TYPE, responseImpl.type());
+        // Netty throws an exception if we try to set null to a header field
+        if (responseImpl.type() != null) {
+            responseImpl.fullHttpReponse().headers().set(CONTENT_TYPE, responseImpl.type());
+        } else {
+            // Use text/plain as a default value fot the content type
+            responseImpl.fullHttpReponse().headers().set(CONTENT_TYPE, ContentType.TEXT_PLAIN.type());
+        }
 
         if (responseImpl.isBinary()) {
             responseImpl.fullHttpReponse().content().writeBytes(responseImpl.getBytes());
