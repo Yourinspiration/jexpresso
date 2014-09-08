@@ -1,5 +1,6 @@
 package de.yourinspiration.jexpresso.core;
 
+import de.yourinspiration.jexpresso.http.ContentType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -125,7 +126,7 @@ public class MiddlewareChannelHandlerTest {
         handler.channelRead0(ctx, request);
 
         handler.responseImpl.send("test");
-        handler.responseImpl.type("text/plain");
+        handler.responseImpl.type(ContentType.TEXT_PLAIN);
 
         handler.cancel();
 
@@ -137,7 +138,7 @@ public class MiddlewareChannelHandlerTest {
         handler.channelRead0(ctx, request);
 
         handler.responseImpl.send("test");
-        handler.responseImpl.type("application/json");
+        handler.responseImpl.type(ContentType.APPLICATION_JSON);
 
         handler.cancel();
 

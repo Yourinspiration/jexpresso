@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * Test case for {@link BasicAuthentication}.
@@ -54,7 +55,7 @@ public class BasicAuthenticationTest {
 
         Mockito.when(request.path()).thenReturn(path);
         Mockito.when(request.method()).thenReturn(HttpMethod.GET);
-        Mockito.when(request.get("Authorization")).thenReturn("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==");
+        Mockito.when(request.get("Authorization")).thenReturn(Optional.of("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="));
         Mockito.when(userDetailsService.loadUserByUsername("Aladdin")).thenReturn(userDetails);
 
         Mockito.when(userDetails.getAuthorities()).thenReturn(new ArrayList<>());
@@ -81,7 +82,7 @@ public class BasicAuthenticationTest {
 
         Mockito.when(request.path()).thenReturn(path);
         Mockito.when(request.method()).thenReturn(HttpMethod.GET);
-        Mockito.when(request.get("Authorization")).thenReturn("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==");
+        Mockito.when(request.get("Authorization")).thenReturn(Optional.of("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="));
         Mockito.when(userDetailsService.loadUserByUsername("Aladdin")).thenThrow(UserNotFoundException.class);
 
         basicAuthentication.handle(request, response, next);
@@ -99,7 +100,7 @@ public class BasicAuthenticationTest {
 
         Mockito.when(request.path()).thenReturn(path);
         Mockito.when(request.method()).thenReturn(HttpMethod.GET);
-        Mockito.when(request.get("Authorization")).thenReturn("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==");
+        Mockito.when(request.get("Authorization")).thenReturn(Optional.of("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="));
         Mockito.when(userDetailsService.loadUserByUsername("Aladdin")).thenReturn(userDetails);
 
         Mockito.when(userDetails.getAuthorities()).thenReturn(new ArrayList<>());

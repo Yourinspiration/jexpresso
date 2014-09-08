@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.SET_COOKIE;
 
@@ -42,8 +43,12 @@ public class RequestResponseContext {
         return channel.localAddress();
     }
 
-    public Object getAttribute(final String name) {
-        return attributes.get(name);
+    public <T> Optional<T> getAttribute(final String name, final Class<T> attributeClass) {
+        if (attributes.get(name).getClass().equals(attributeClass)) {
+            return Optional.ofNullable((T) attributes.get(name));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public void setAttribute(final String name, final Object value) {

@@ -105,10 +105,10 @@ public class MiddlewareChannelHandler extends SimpleChannelInboundHandler<FullHt
             String renderedModel;
 
             switch (responseImpl.type()) {
-                case "application/json":
+                case APPLICATION_JSON:
                     renderedModel = new JsonTransformer().render(model);
                     break;
-                case "text/html":
+                case TEXT_HTML:
                     renderedModel = new HtmlTransformer().render(model);
                     break;
                 default:

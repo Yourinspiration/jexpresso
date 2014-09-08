@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Optional;
+
 /**
  * Test case for {@link SessionSupport}.
  *
@@ -35,8 +37,8 @@ public class SessionSupportTest {
         final Response response = Mockito.mock(Response.class);
         final Next next = Mockito.mock(Next.class);
 
-        Mockito.when(request.cookie(SessionSupport.COOKIE_NAME)).thenReturn(
-                new DefaultCookie(SessionSupport.COOKIE_NAME, "4711"));
+        Mockito.when(request.cookie(SessionSupport.COOKIE_NAME)).thenReturn(Optional.of(
+                new DefaultCookie(SessionSupport.COOKIE_NAME, "4711")));
 
         jexpressoSessionSupport.handle(request, response, next);
 

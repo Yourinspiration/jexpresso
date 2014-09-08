@@ -188,12 +188,12 @@ public class StaticResources implements MiddlewareHandler {
     }
 
     private boolean checkIfModified(final Request request, final long lastModified) {
-        String ifModifiedSince = request.get(IF_MODIFIED_SINCE);
-        if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+        Optional<String> ifModifiedSince = request.get(IF_MODIFIED_SINCE);
+        if (ifModifiedSince.isPresent() && !ifModifiedSince.get().isEmpty()) {
             SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
             Date ifModifiedSinceDate;
             try {
-                ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince);
+                ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince.get());
             } catch (ParseException e) {
                 return false;
             }
@@ -233,7 +233,7 @@ public class StaticResources implements MiddlewareHandler {
      */
     private void sendNotModified(final Response response) {
         setDateHeader(response);
-        response.type(ContentType.TEXT_HTML.type());
+        response.type(ContentType.TEXT_HTML);
         response.status(HttpStatus.NOT_MODIFIED);
     }
 

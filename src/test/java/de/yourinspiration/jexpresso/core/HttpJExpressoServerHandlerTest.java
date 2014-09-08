@@ -1,12 +1,6 @@
 package de.yourinspiration.jexpresso.core;
 
-import de.yourinspiration.jexpresso.exception.ExceptionHandlerEntry;
 import de.yourinspiration.jexpresso.exception.NotFoundException;
-import de.yourinspiration.jexpresso.http.ContentType;
-import de.yourinspiration.jexpresso.transformer.HtmlTransformer;
-import de.yourinspiration.jexpresso.transformer.JsonTransformer;
-import de.yourinspiration.jexpresso.transformer.PlainTextTransformer;
-import de.yourinspiration.jexpresso.transformer.ResponseTransformer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -20,11 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 
 /**
@@ -34,10 +23,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
  */
 public class HttpJExpressoServerHandlerTest {
 
-    private final List<Route> routes = new ArrayList<>();
-    private final List<ExceptionHandlerEntry> exceptionHandlerEntries = new ArrayList<>();
-    private final Map<String, TemplateEngine> templateEngines = new HashMap<>();
-    private final Map<ContentType, ResponseTransformer> responseTransformerMap = new HashMap<>();
+    private final JExpressoBase base = new JExpressoBase();
     private HttpJExpressoServerHandler handler;
     @Mock
     private ChannelHandlerContext ctx;
@@ -65,23 +51,21 @@ public class HttpJExpressoServerHandlerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        responseTransformerMap.put(ContentType.APPLICATION_JSON, new JsonTransformer());
-        responseTransformerMap.put(ContentType.TEXT_HTML, new HtmlTransformer());
-        responseTransformerMap.put(ContentType.TEXT_PLAIN, new PlainTextTransformer());
-
-        ResponseImpl responseImpl = new ResponseImpl(fullHttpResponse);
-
         Mockito.when(ctx.channel()).thenReturn(channel);
         Mockito.when(channel.attr(RequestResponseContext.ATTR_KEY)).thenReturn(attribute);
         Mockito.when(attribute.get()).thenReturn(reqResContext);
-        Mockito.when(reqResContext.getResponse()).thenReturn(responseImpl);
+
         Mockito.when(ctx.writeAndFlush(Matchers.any())).thenReturn(channelFuture);
         Mockito.when(request.headers()).thenReturn(httpHeaders);
         Mockito.when(request.getProtocolVersion()).thenReturn(httpVersion);
         Mockito.when(fullHttpResponse.headers()).thenReturn(httpHeaders);
         Mockito.when(fullHttpResponse.content()).thenReturn(byteBuf);
 
-        handler = new HttpJExpressoServerHandler(routes, exceptionHandlerEntries, templateEngines, responseTransformerMap);
+        handler = new HttpJExpressoServerHandler(base);
+
+        ResponseImpl responseImpl = new ResponseImpl(fullHttpResponse);
+
+        Mockito.when(reqResContext.getResponse()).thenReturn(responseImpl);
     }
 
     @Test
@@ -99,13 +83,7 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                response.send("test");
-            }
-        }));
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> response.send("test")));
 
         handler.channelRead0(ctx, request);
 
@@ -118,13 +96,7 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                response.send("test");
-            }
-        }));
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> response.send("test")));
 
         handler.channelRead0(ctx, request);
 
@@ -137,13 +109,7 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                response.send("test");
-            }
-        }));
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> response.send("test")));
 
         handler.channelRead0(ctx, request);
 
@@ -156,15 +122,11 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                final Customer c = new Customer();
-                c.firstName = "Max";
-                c.lastName = "Mustermann";
-                response.json(c);
-            }
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> {
+            final Customer c = new Customer();
+            c.firstName = "Max";
+            c.lastName = "Mustermann";
+            response.json(c);
         }));
 
         handler.channelRead0(ctx, request);
@@ -178,12 +140,8 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                throw new NotFoundException();
-            }
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> {
+            throw new NotFoundException();
         }));
 
         handler.channelRead0(ctx, request);
@@ -197,20 +155,10 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        exceptionHandlerEntries.add(new ExceptionHandlerEntry(RuntimeException.class, new RouteHandler() {
+        base.addExceptionHandler(RuntimeException.class, (request, response) -> response.send("EXCEPTION"));
 
-            @Override
-            public void handle(Request request, Response response) {
-                response.send("EXCEPTION");
-            }
-        }));
-
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                throw new RuntimeException();
-            }
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> {
+            throw new RuntimeException();
         }));
 
         handler.channelRead0(ctx, request);
@@ -224,12 +172,8 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                throw new RuntimeException();
-            }
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> {
+            throw new RuntimeException();
         }));
 
         handler.channelRead0(ctx, request);
@@ -254,21 +198,9 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        templateEngines.put("hbs", new TemplateEngine() {
+        base.addTemplateEngine("hbs", (template, options) -> "test");
 
-            @Override
-            public String render(String template, Map<String, Object> options) {
-                return "test";
-            }
-        });
-
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                response.render("test.hbs", new Options());
-            }
-        }));
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> response.render("test.hbs", new Options())));
 
         handler.channelRead0(ctx, request);
 
@@ -281,21 +213,9 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        templateEngines.put("hbs", new TemplateEngine() {
+        base.addTemplateEngine("hbs", (template, options) -> "test");
 
-            @Override
-            public String render(String template, Map<String, Object> options) {
-                return "test";
-            }
-        });
-
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                response.render("test", new Options());
-            }
-        }));
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> response.render("test", new Options())));
 
         handler.channelRead0(ctx, request);
     }
@@ -306,21 +226,9 @@ public class HttpJExpressoServerHandlerTest {
         Mockito.when(request.getUri()).thenReturn("/test");
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
 
-        templateEngines.put("xyz", new TemplateEngine() {
+        base.addTemplateEngine("xyz", (template, options) -> "test");
 
-            @Override
-            public String render(String template, Map<String, Object> options) {
-                return "test";
-            }
-        });
-
-        routes.add(new Route("/test", HttpMethod.GET, new RouteHandler() {
-
-            @Override
-            public void handle(Request request, Response response) {
-                response.render("test.hbs", new Options());
-            }
-        }));
+        base.addRoute(new Route("/test", HttpMethod.GET, (request, response) -> response.render("test.hbs", new Options())));
 
         handler.channelRead0(ctx, request);
     }

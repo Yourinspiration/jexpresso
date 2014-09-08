@@ -91,8 +91,31 @@ public class RequestImpl implements Request {
     }
 
     @Override
-    public String param(final String name) {
-        return params().get(name);
+    public Optional<String> param(final String name) {
+        return Optional.of(params().get(name));
+    }
+
+    @Override
+    public Map<String, String> postParams() {
+        if (method().equals(HttpMethod.POST)) {
+            final Map<String, String> paramMap = new HashMap<>();
+            final String[] params = body().split("&");
+            for (String param : params) {
+                final String[] keyValue = param.split("=");
+                if (keyValue.length == 2) {
+                    paramMap.put(keyValue[0], keyValue[1]);
+                }
+            }
+            return paramMap;
+        } else {
+            return new HashMap<>();
+        }
+    }
+
+    @Override
+    public Optional<String> postParam(final String name) {
+        final Map<String, String> params = postParams();
+        return params.containsKey(name) ? Optional.ofNullable(params.get(name)) : Optional.empty();
     }
 
     @Override
@@ -105,9 +128,7 @@ public class RequestImpl implements Request {
         for (Entry<String, List<String>> entry : params.entrySet()) {
             final StringBuilder buf = new StringBuilder();
             List<String> vals = entry.getValue();
-            for (String val : vals) {
-                buf.append(val);
-            }
+            vals.forEach(buf::append);
             query.put(entry.getKey(), buf.toString());
         }
 
@@ -115,8 +136,8 @@ public class RequestImpl implements Request {
     }
 
     @Override
-    public String query(final String name) {
-        return query().get(name);
+    public Optional<String> query(final String name) {
+        return Optional.ofNullable(query().get(name));
     }
 
     @Override
@@ -140,13 +161,13 @@ public class RequestImpl implements Request {
     }
 
     @Override
-    public Cookie cookie(final String name) {
+    public Optional<Cookie> cookie(final String name) {
         for (Cookie cookie : cookies()) {
             if (cookie.getName().equals(name)) {
-                return cookie;
+                return Optional.ofNullable(cookie);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -161,34 +182,50 @@ public class RequestImpl implements Request {
     }
 
     @Override
-    public String get(final String field) {
-        return fullHttpRequest.headers().get(field);
+    public Optional<String> get(final String field) {
+        if (fullHttpRequest.headers().get(field) != null) {
+            return Optional.ofNullable(fullHttpRequest.headers().get(field));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public String accepts(final String... types) {
+    public Optional<String> accepts(final String... types) {
         // text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
         // The MIME types are separated by commas.
-        final String[] acceptHeadersTokens = get(HttpHeaders.Names.ACCEPT).split(",");
-        return acceptsHeader(acceptHeadersTokens, types);
+        if (get(HttpHeaders.Names.ACCEPT).isPresent()) {
+            final String[] acceptHeadersTokens = get(HttpHeaders.Names.ACCEPT).get().split(",");
+            return acceptsHeader(acceptHeadersTokens, types);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public String acceptsCharset(final String... charsets) {
-        final String[] headersTokens = get(HttpHeaders.Names.ACCEPT_CHARSET).split(",");
-        return acceptsHeader(headersTokens, charsets);
+    public Optional<String> acceptsCharset(final String... charsets) {
+        if (get(HttpHeaders.Names.ACCEPT_CHARSET).isPresent()) {
+            final String[] headersTokens = get(HttpHeaders.Names.ACCEPT_CHARSET).get().split(",");
+            return acceptsHeader(headersTokens, charsets);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public String acceptsLanguage(final String... lang) {
-        final String[] headersTokens = get(HttpHeaders.Names.ACCEPT_LANGUAGE).split(",");
-        return acceptsHeader(headersTokens, lang);
+    public Optional<String> acceptsLanguage(final String... lang) {
+        if (get(HttpHeaders.Names.ACCEPT_LANGUAGE).isPresent()) {
+            final String[] headersTokens = get(HttpHeaders.Names.ACCEPT_LANGUAGE).get().split(",");
+            return acceptsHeader(headersTokens, lang);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
     public boolean is(final String type) {
-        final String contentType = get(HttpHeaders.Names.CONTENT_TYPE);
-        return contentType != null && contentType.matches(type.replaceAll("\\*", ".*"));
+        final Optional<String> contentType = get(HttpHeaders.Names.CONTENT_TYPE);
+        return contentType.isPresent() && contentType.get().matches(type.replaceAll("\\*", ".*"));
     }
 
     @Override
@@ -208,7 +245,7 @@ public class RequestImpl implements Request {
 
     @Override
     public boolean xhr() {
-        return "XMLHttpRequest".equals(get("X-Requested-With"));
+        return get("X-Requested-With").isPresent() && "XMLHttpRequest".equals(get("X-Requested-With").get());
     }
 
     @Override
@@ -223,8 +260,8 @@ public class RequestImpl implements Request {
     }
 
     @Override
-    public Object attribute(final String name) {
-        return requestResponseContext.getAttribute(name);
+    public <T> Optional<T> attribute(final String name, final Class<T> attributeClass) {
+        return Optional.ofNullable(requestResponseContext.getAttribute(name, attributeClass).get());
     }
 
     @Override
@@ -237,9 +274,17 @@ public class RequestImpl implements Request {
         return fullHttpRequest.getMethod();
     }
 
-    private String acceptsHeader(final String[] headersTokens, final String... types) {
+    private class HeaderComparator implements Comparator<String> {
+
+        @Override
+        public int compare(String o1, String o2) {
+            return o2.compareTo(o1);
+        }
+    }
+
+    private Optional<String> acceptsHeader(final String[] headersTokens, final String... types) {
         // We need an ordered map, ordered by the qualifiers
-        final Map<String, List<String>> qualifiedHeaders = new TreeMap<>((o1, o2) -> o2.compareTo(o1));
+        final Map<String, List<String>> qualifiedHeaders = new TreeMap<>(new HeaderComparator());
 
         for (String headersToken : headersTokens) {
             // Types may have a qualifier or not. If the type has no
@@ -269,13 +314,13 @@ public class RequestImpl implements Request {
             for (String type : types) {
                 for (String header : entry.getValue()) {
                     if (type.matches(header.replace("*", ".*"))) {
-                        return type;
+                        return Optional.ofNullable(type);
                     }
                 }
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
 }

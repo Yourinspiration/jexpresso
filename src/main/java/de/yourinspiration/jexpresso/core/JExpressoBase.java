@@ -49,8 +49,7 @@ public class JExpressoBase {
                 b.group(bossGroup, workerGroup)
                         .channel(NioServerSocketChannel.class)
                         .childHandler(
-                                new HttpJExpressoServerInitializer(routes, exceptionHandlerEntries,
-                                        middlewareHandlers, templateEngines, responseTransformerMap));
+                                new HttpJExpressoServerInitializer(this));
 
                 Channel ch = b.bind(port).sync().channel();
                 ch.closeFuture().sync();
@@ -90,5 +89,25 @@ public class JExpressoBase {
 
     public void setTransformer(final ResponseTransformer responseTransformer) {
         responseTransformerMap.put(responseTransformer.contentType(), responseTransformer);
+    }
+
+    public List<Route> getRoutes() {
+        return routes;
+    }
+
+    public List<ExceptionHandlerEntry> getExceptionHandlerEntries() {
+        return exceptionHandlerEntries;
+    }
+
+    public Map<String, TemplateEngine> getTemplateEngines() {
+        return templateEngines;
+    }
+
+    public List<MiddlewareHandler> getMiddlewareHandlers() {
+        return middlewareHandlers;
+    }
+
+    public Map<ContentType, ResponseTransformer> getResponseTransformerMap() {
+        return responseTransformerMap;
     }
 }

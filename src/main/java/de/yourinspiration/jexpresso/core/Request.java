@@ -1,10 +1,12 @@
 package de.yourinspiration.jexpresso.core;
 
+import de.yourinspiration.jexpresso.http.ContentType;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.HttpMethod;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Represents a HTTP request.
@@ -32,7 +34,7 @@ public interface Request {
      *
      * @param <T>   the type of the object
      * @param clazz the class of the parsed content
-     * @return the request body
+     * @return the request body as parsed JSON
      */
     <T> T json(Class<T> clazz);
 
@@ -56,9 +58,9 @@ public interface Request {
      * Returns the query for the given name.
      *
      * @param name the name
-     * @return returns null if no such query exists
+     * @return returns the query for the given name
      */
-    String query(String name);
+    Optional<String> query(String name);
 
     /**
      * Return the value of param name when present.
@@ -66,7 +68,20 @@ public interface Request {
      * @param name the name of the param
      * @return returns null if no such param exists
      */
-    String param(String name);
+    Optional<String> param(String name);
+
+    /**
+     * Returns a map containing the parsed parameters of a post request.
+     * @return returns an empty map if no parameters where found
+     */
+    Map<String, String> postParams();
+
+    /**
+     * Returns the parameter of a post request for the given name.
+     * @param name the name of the parameter
+     * @return returns the parameter of a post request for the given name
+     */
+    Optional<String> postParam(String name);
 
     /**
      * Returns the cookies sent by the user-agent.
@@ -79,51 +94,51 @@ public interface Request {
      * Returns the cookie for the given name sent by the user-agent.
      *
      * @param name the name
-     * @return returns null if no such cookie was sent
+     * @return returns the cookie for the given name sent by the user-agent
      */
-    Cookie cookie(String name);
+    Optional<Cookie> cookie(String name);
 
     /**
      * Set the given cookie. Will overwrite an existing cookie.
      *
      * @param cookie the cookie.
      */
-    void setCookie(final Cookie cookie);
+    void setCookie(Cookie cookie);
 
     /**
      * Get the case-insensitive request header field. The Referrer and Referer
      * fields are interchangeable.
      *
      * @param field the name of the request header field
-     * @return returns null if no such field exists
+     * @return returns the request header field value
      */
-    String get(String field);
+    Optional<String> get(String field);
 
     /**
      * Check if the given types are acceptable, returning the best match when
-     * true, otherwise <code>null</code> - in which case you should respond with
+     * true, otherwise with an empty optional - in which case you should respond with
      * 406 "Not Acceptable".
      *
      * @param types the types to be checked
-     * @return returns <code>null</code> if no type is acceptable
+     * @return returns an empty optional if no type is acceptable
      */
-    String accepts(String... types);
+    Optional<String> accepts(String... types);
 
     /**
      * Check if the given charsets are acceptable.
      *
      * @param charsets the charsets to be checked
-     * @return returns null if no charset is acceptable
+     * @return returns an empty optional if no charset is acceptable
      */
-    String acceptsCharset(String... charsets);
+    Optional<String> acceptsCharset(String... charsets);
 
     /**
      * Check if the given lang are acceptable.
      *
      * @param lang the languages to be checked
-     * @return returns null if no language is acceptable
+     * @return returns an empty optional if no language is acceptable
      */
-    String acceptsLanguage(String... lang);
+    Optional<String> acceptsLanguage(String... lang);
 
     /**
      * Check if the incoming request contains the "Content-Type" header field,
@@ -150,7 +165,7 @@ public interface Request {
     String path();
 
     /**
-     * Returns the hostname from the "Host" header field (void of portno).
+     * Returns the hostname from the "Host" header field.
      *
      * @return the hostname
      */
@@ -183,11 +198,11 @@ public interface Request {
     /**
      * Get a request attribute.
      *
-     * @param name name of the attribute
-     * @return returns <code>null</code> if no attribute with the given name
-     * exists.
+     * @param name           name of the attribute
+     * @param attributeClass the class of the attribute
+     * @return returns the request attribute for the given name and class
      */
-    Object attribute(final String name);
+    <T> Optional<T> attribute(final String name, final Class<T> attributeClass);
 
     /**
      * Set a request attribute.

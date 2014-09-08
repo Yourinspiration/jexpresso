@@ -26,10 +26,13 @@ public class ResponseImplTest {
 
     @Mock
     private FullHttpResponse fullHttpResponse;
+    @Mock
+    private HttpHeaders headers;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
         responseImpl = new ResponseImpl(fullHttpResponse);
     }
 
@@ -47,9 +50,6 @@ public class ResponseImplTest {
 
     @Test
     public void testSetStringString() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         responseImpl.set("key", "value");
 
         Mockito.verify(headers).set("key", "value");
@@ -70,11 +70,10 @@ public class ResponseImplTest {
 
     @Test
     public void testGet() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
         Mockito.when(headers.get("field")).thenReturn("value");
+        Mockito.when(headers.contains("field")).thenReturn(true);
 
-        assertEquals("value", responseImpl.get("field"));
+        assertEquals("value", responseImpl.get("field").get());
     }
 
     @Test
@@ -126,9 +125,6 @@ public class ResponseImplTest {
 
     @Test
     public void testSendTextHtml() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         responseImpl.send("<h1>test</h1>");
 
         Mockito.verify(headers).set(CONTENT_TYPE, "text/html");
@@ -136,24 +132,7 @@ public class ResponseImplTest {
     }
 
     @Test
-    public void testSendJson() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
-        final Customer customer = new Customer();
-        customer.name = "Max Mustermann";
-
-        responseImpl.send(customer);
-
-        Mockito.verify(headers).set(CONTENT_TYPE, "application/json");
-        assertEquals(customer, responseImpl.getContent());
-    }
-
-    @Test
     public void testSendHtmlWithHttpStatus() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         responseImpl.send(HttpStatus.CREATED, "<h1>test</h1>");
 
         Mockito.verify(headers).set(CONTENT_TYPE, "text/html");
@@ -162,25 +141,7 @@ public class ResponseImplTest {
     }
 
     @Test
-    public void testSendJsonWithHttpStatus() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
-        final Customer customer = new Customer();
-        customer.name = "Max Mustermann";
-
-        responseImpl.send(HttpStatus.CREATED, customer);
-
-        Mockito.verify(headers).set(CONTENT_TYPE, "application/json");
-        assertEquals(customer, responseImpl.getContent());
-        Mockito.verify(fullHttpResponse).setStatus(HttpResponseStatus.CREATED);
-    }
-
-    @Test
     public void testSendByteArray() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         responseImpl.send("test".getBytes());
 
         Mockito.verify(headers).set(CONTENT_TYPE, "application/octet-stream");
@@ -190,9 +151,6 @@ public class ResponseImplTest {
 
     @Test
     public void testSendByteArrayWithHttpStatus() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         responseImpl.send(HttpStatus.CREATED, "test".getBytes());
 
         Mockito.verify(headers).set(CONTENT_TYPE, "application/octet-stream");
@@ -203,9 +161,6 @@ public class ResponseImplTest {
 
     @Test
     public void testSendHttpStatus() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         responseImpl.send(HttpStatus.CREATED);
 
         Mockito.verify(fullHttpResponse).setStatus(HttpResponseStatus.CREATED);
@@ -213,9 +168,6 @@ public class ResponseImplTest {
 
     @Test
     public void testJsonObject() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         final Customer customer = new Customer();
         customer.name = "Max Mustermann";
 
@@ -227,9 +179,6 @@ public class ResponseImplTest {
 
     @Test
     public void testJsonWithHttpStatus() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         final Customer customer = new Customer();
         customer.name = "Max Mustermann";
 
@@ -242,13 +191,10 @@ public class ResponseImplTest {
 
     @Test
     public void testJsonpObject() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         final Customer customer = new Customer();
         customer.name = "Max Mustermann";
 
-        responseImpl.jsonp(customer);
+        responseImpl.jsonp(customer, "callback");
 
         Mockito.verify(headers).set(CONTENT_TYPE, "application/json");
         assertEquals(customer, responseImpl.getContent());
@@ -257,13 +203,10 @@ public class ResponseImplTest {
 
     @Test
     public void testJsonpHttpStatusObject() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         final Customer customer = new Customer();
         customer.name = "Max Mustermann";
 
-        responseImpl.jsonp(HttpStatus.CREATED, customer);
+        responseImpl.jsonp(HttpStatus.CREATED, customer, "callback");
 
         Mockito.verify(headers).set(CONTENT_TYPE, "application/json");
         assertEquals(customer, responseImpl.getContent());
@@ -272,20 +215,7 @@ public class ResponseImplTest {
     }
 
     @Test
-    public void testSetTypeAsString() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
-        responseImpl.type("application/json");
-
-        Mockito.verify(headers).set(CONTENT_TYPE, "application/json");
-    }
-
-    @Test
     public void testSetType() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         responseImpl.type(ContentType.TEXT_PLAIN);
 
         Mockito.verify(headers).set(CONTENT_TYPE, ContentType.TEXT_PLAIN.type());
@@ -293,18 +223,13 @@ public class ResponseImplTest {
 
     @Test
     public void testGetType() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
         Mockito.when(headers.get("Content-Type")).thenReturn("application/json");
 
-        assertEquals("application/json", responseImpl.type());
+        assertEquals(ContentType.APPLICATION_JSON, responseImpl.type());
     }
 
     @Test
     public void testRender() {
-        final HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-        Mockito.when(fullHttpResponse.headers()).thenReturn(headers);
-
         final Options options = new Options("test", "value");
 
         responseImpl.render("view", options);

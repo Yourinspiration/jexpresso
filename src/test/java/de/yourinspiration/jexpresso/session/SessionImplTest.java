@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -28,8 +30,8 @@ public class SessionImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(request.cookie(SessionSupport.COOKIE_NAME)).thenReturn(
-                new DefaultCookie(SessionSupport.COOKIE_NAME, sessionId));
+        Mockito.when(request.cookie(SessionSupport.COOKIE_NAME)).thenReturn(Optional.of(
+                new DefaultCookie(SessionSupport.COOKIE_NAME, sessionId)));
 
         sessionImpl = new SessionImpl(request, sessionStore);
     }

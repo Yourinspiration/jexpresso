@@ -34,8 +34,9 @@ public class HttpJExpressoServerInitializerTest {
         final List<MiddlewareHandler> middlewareHandlers = new ArrayList<>();
         final Map<ContentType, ResponseTransformer> responseTransformerMap = new HashMap<>();
 
-        final HttpJExpressoServerInitializer initializer = new HttpJExpressoServerInitializer(routes,
-                exceptionHandlerEntries, middlewareHandlers, templateEngines, responseTransformerMap);
+        final JExpressoBase base = new JExpressoBase();
+
+        final HttpJExpressoServerInitializer initializer = new HttpJExpressoServerInitializer(base);
 
         final Channel ch = Mockito.mock(Channel.class);
         final ChannelPipeline p = Mockito.mock(ChannelPipeline.class);

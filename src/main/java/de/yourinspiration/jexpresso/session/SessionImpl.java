@@ -24,7 +24,11 @@ public class SessionImpl implements Session {
     protected SessionImpl(final Request request, final SessionStore sessionStore) {
         this.request = request;
         this.sessionStore = sessionStore;
-        this.sessionId = request.cookie(SessionSupport.COOKIE_NAME).getValue();
+        if (request.cookie(SessionSupport.COOKIE_NAME).isPresent()) {
+            this.sessionId = request.cookie(SessionSupport.COOKIE_NAME).get().getValue();
+        } else {
+           throw new IllegalStateException("missing session cookie");
+        }
     }
 
     @Override
@@ -40,7 +44,11 @@ public class SessionImpl implements Session {
     @Override
     public void invalidate() {
         sessionStore.clear(sessionId);
-        request.cookie(SessionSupport.COOKIE_NAME).setDiscard(true);
+        if (request.cookie(SessionSupport.COOKIE_NAME).isPresent()) {
+            request.cookie(SessionSupport.COOKIE_NAME).get().setDiscard(true);
+        } else {
+            throw new IllegalStateException("missing session cookie");
+        }
     }
 
 }

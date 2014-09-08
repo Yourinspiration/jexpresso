@@ -7,6 +7,7 @@ import de.yourinspiration.jexpresso.core.Response;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.DefaultCookie;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -35,10 +36,10 @@ public class SessionSupport implements MiddlewareHandler {
      * Helper method to retrieve the de.yourinspiration.jexpresso.session of the current request.
      *
      * @param request the current request
-     * @return returns <code>null</code> if no de.yourinspiration.jexpresso.session exists
+     * @return returns the current session
      */
-    public static Session session(final Request request) {
-        return (Session) request.attribute(SessionSupport.SESSION_ATTR);
+    public static Optional<Session> session(final Request request) {
+        return request.attribute(SessionSupport.SESSION_ATTR, Session.class);
     }
 
     @Override

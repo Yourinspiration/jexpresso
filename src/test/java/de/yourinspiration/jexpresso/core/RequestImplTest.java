@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -98,7 +99,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.getUri()).thenReturn("/customer/123");
 
-        assertEquals("123", requestImpl.param("id"));
+        assertEquals("123", requestImpl.param("id").get());
     }
 
     @Test
@@ -110,7 +111,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.getUri()).thenReturn("/customer/123?token=asldkjasldkjalskdjalskdj");
 
-        assertEquals("123", requestImpl.param("id"));
+        assertEquals("123", requestImpl.param("id").get());
     }
 
     @Test
@@ -128,8 +129,8 @@ public class RequestImplTest {
     public void testQueryString() {
         Mockito.when(fullHttpRequest.getUri()).thenReturn("/customer?name=Max&age=21");
 
-        assertEquals("Max", requestImpl.query("name"));
-        assertEquals("21", requestImpl.query("age"));
+        assertEquals("Max", requestImpl.query("name").get());
+        assertEquals("21", requestImpl.query("age").get());
     }
 
     @Test
@@ -153,11 +154,11 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        final Cookie cookie = requestImpl.cookie("testKey");
+        final Optional<Cookie> cookie = requestImpl.cookie("testKey");
 
-        assertNotNull(cookie);
-        assertEquals("testKey", cookie.getName());
-        assertEquals("testValue", cookie.getValue());
+        assertTrue(cookie.isPresent());
+        assertEquals("testKey", cookie.get().getName());
+        assertEquals("testValue", cookie.get().getValue());
     }
 
     @Test
@@ -166,9 +167,9 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        final Cookie cookie = requestImpl.cookie("testKey");
+        final Optional<Cookie> cookie = requestImpl.cookie("testKey");
 
-        assertNull(cookie);
+        assertFalse(cookie.isPresent());
     }
 
     @Test
@@ -178,7 +179,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        assertEquals("text/html", requestImpl.get("Content-Type"));
+        assertEquals("text/html", requestImpl.get("Content-Type").get());
     }
 
     @Test
@@ -188,7 +189,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        assertEquals("text/html", requestImpl.accepts("test/test", "text/html"));
+        assertEquals("text/html", requestImpl.accepts("test/test", "text/html").get());
     }
 
     @Test
@@ -198,7 +199,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        assertNull(requestImpl.accepts("test/test", "text/nothing"));
+        assertFalse(requestImpl.accepts("test/test", "text/nothing").isPresent());
     }
 
     @Test
@@ -208,7 +209,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        assertEquals("unicode-1-1", requestImpl.acceptsCharset("utf-8", "unicode-1-1"));
+        assertEquals("unicode-1-1", requestImpl.acceptsCharset("utf-8", "unicode-1-1").get());
     }
 
     @Test
@@ -218,7 +219,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        assertNull(requestImpl.acceptsCharset("utf-8"));
+        assertFalse(requestImpl.acceptsCharset("utf-8").isPresent());
     }
 
     @Test
@@ -228,7 +229,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        assertEquals("en", requestImpl.acceptsLanguage("de", "en", "fr"));
+        assertEquals("en", requestImpl.acceptsLanguage("de", "en", "fr").get());
     }
 
     @Test
@@ -238,7 +239,7 @@ public class RequestImplTest {
 
         Mockito.when(fullHttpRequest.headers()).thenReturn(headers);
 
-        assertNull(requestImpl.acceptsLanguage("de", "fr"));
+        assertFalse(requestImpl.acceptsLanguage("de", "fr").isPresent());
     }
 
     @Test
@@ -307,8 +308,8 @@ public class RequestImplTest {
 
     @Test
     public void testGetAttribute() {
-        Mockito.when(requestResponseContext.getAttribute("test")).thenReturn("value");
-        assertEquals("value", requestImpl.attribute("test"));
+        Mockito.when(requestResponseContext.getAttribute("test", String.class)).thenReturn(Optional.of("value"));
+        assertEquals("value", requestImpl.attribute("test", String.class).get());
     }
 
     @Test
@@ -331,7 +332,7 @@ public class RequestImplTest {
 
         requestImpl.setCookie(new DefaultCookie("key", "value"));
 
-        assertEquals("value", requestImpl.cookie("key").getValue());
+        assertEquals("value", requestImpl.cookie("key").get().getValue());
     }
 
     class Customer {

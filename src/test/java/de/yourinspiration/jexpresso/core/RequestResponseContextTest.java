@@ -50,7 +50,7 @@ public class RequestResponseContextTest {
     @Test
     public void testSetAndGetAttribute() {
         ctx.setAttribute("test", "value");
-        assertEquals("value", ctx.getAttribute("test"));
+        assertEquals("value", ctx.getAttribute("test", String.class).get());
     }
 
     @Test

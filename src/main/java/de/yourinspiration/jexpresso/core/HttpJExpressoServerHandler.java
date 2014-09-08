@@ -15,9 +15,6 @@ import io.netty.util.Attribute;
 import io.netty.util.CharsetUtil;
 import org.pmw.tinylog.Logger;
 
-import java.util.List;
-import java.util.Map;
-
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 
 /**
@@ -29,22 +26,13 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
 
     private static final byte[] EMPTY_BYTES = new byte[0];
 
-    private final List<Route> routes;
-    private final List<ExceptionHandlerEntry> exceptionHandlerEntries;
-    private final Map<String, TemplateEngine> templateEngines;
-    private final Map<ContentType, ResponseTransformer> responseTransformerMap;
+    private final JExpressoBase base;
 
     private RequestImpl requestImpl;
     private ResponseImpl responseImpl;
 
-    protected HttpJExpressoServerHandler(final List<Route> routes,
-                                         final List<ExceptionHandlerEntry> exceptionHandlerEntries,
-                                         final Map<String, TemplateEngine> templateEngines,
-                                         final Map<ContentType, ResponseTransformer> responseTransformerMap) {
-        this.routes = routes;
-        this.exceptionHandlerEntries = exceptionHandlerEntries;
-        this.templateEngines = templateEngines;
-        this.responseTransformerMap = responseTransformerMap;
+    protected HttpJExpressoServerHandler(final JExpressoBase base) {
+        this.base = base;
     }
 
     @Override
@@ -123,7 +111,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
      * exception
      */
     private ExceptionHandlerEntry getExceptionHandlerEntryForException(final Exception e) {
-        for (ExceptionHandlerEntry exceptionHandlerEntry : exceptionHandlerEntries) {
+        for (ExceptionHandlerEntry exceptionHandlerEntry : base.getExceptionHandlerEntries()) {
             if (exceptionHandlerEntry.isInstanceOf(e)) {
                 return exceptionHandlerEntry;
             }
@@ -140,7 +128,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
      * otherwise <code>false</code>
      */
     private boolean findAndCallRoute(final RequestImpl request, final ResponseImpl response) {
-        for (Route route : routes) {
+        for (Route route : base.getRoutes()) {
 
             if (route.matchesPathAndMethod(getBasePath(request), request.method())) {
                 Logger.debug("Found matching route {0}", route);
@@ -188,7 +176,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
             renderedModel = renderModel(response, model);
 
             if (response.isJsonp()) {
-                final String callback = request.query("callback") != null ? request.query("callback") : "";
+                final String callback = request.query("callback").isPresent() ? request.query("callback").get() : "";
                 renderedModel = callback + "(" + renderedModel + ");";
             }
 
@@ -219,7 +207,7 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         if (ext == null) {
             throw new RuntimeException("template file must contain a file extension");
         }
-        final TemplateEngine templateEngine = templateEngines.get(ext);
+        final TemplateEngine templateEngine = base.getTemplateEngines().get(ext);
         if (templateEngine == null) {
             throw new RuntimeException("no template engine registered for extension " + ext);
         }
@@ -232,14 +220,14 @@ public class HttpJExpressoServerHandler extends SimpleChannelInboundHandler<Full
         ResponseTransformer responseTransformer = new PlainTextTransformer();
 
         switch (response.type()) {
-            case "application/json":
-                if (responseTransformerMap.get(ContentType.APPLICATION_JSON) != null) {
-                    responseTransformer = responseTransformerMap.get(ContentType.APPLICATION_JSON);
+            case APPLICATION_JSON:
+                if (base.getResponseTransformerMap().get(ContentType.APPLICATION_JSON) != null) {
+                    responseTransformer = base.getResponseTransformerMap().get(ContentType.APPLICATION_JSON);
                 }
                 break;
-            case "text/html":
-                if (responseTransformerMap.get(ContentType.TEXT_HTML) != null) {
-                    responseTransformer = responseTransformerMap.get(ContentType.TEXT_HTML);
+            case TEXT_HTML:
+                if (base.getResponseTransformerMap().get(ContentType.TEXT_HTML) != null) {
+                    responseTransformer = base.getResponseTransformerMap().get(ContentType.TEXT_HTML);
                 }
                 break;
             default:

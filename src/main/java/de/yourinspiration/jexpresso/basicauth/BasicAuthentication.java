@@ -98,32 +98,33 @@ public class BasicAuthentication implements MiddlewareHandler {
                                         final PasswordEncoder passwordEncoder) {
         boolean authenticated = false;
 
-        final String authorization = request.get("Authorization");
+        if (request.get("Authorization").isPresent()) {
+            String authorization = request.get("Authorization").get();
+            if (authorization.startsWith("Basic")) {
+                // Authorization: Basic base64credentials
+                final String base64Credentials = authorization.substring("Basic".length()).trim();
+                final String credentials = new String(Base64.getDecoder().decode(base64Credentials),
+                        Charset.forName("UTF-8"));
 
-        if (authorization != null && authorization.startsWith("Basic")) {
-            // Authorization: Basic base64credentials
-            final String base64Credentials = authorization.substring("Basic".length()).trim();
-            final String credentials = new String(Base64.getDecoder().decode(base64Credentials),
-                    Charset.forName("UTF-8"));
+                // credentials = username:password
+                final String[] values = credentials.split(":", 2);
 
-            // credentials = username:password
-            final String[] values = credentials.split(":", 2);
+                try {
+                    final UserDetails userDetails = userDetailsService.loadUserByUsername(values[0]);
 
-            try {
-                final UserDetails userDetails = userDetailsService.loadUserByUsername(values[0]);
+                    if (userDetails != null && passwordEncoder.checkpw(values[1], userDetails.getPassword())) {
+                        final String authorities = getAuthoritiesForRoute(request.path(), request.method());
 
-                if (userDetails != null && passwordEncoder.checkpw(values[1], userDetails.getPassword())) {
-                    final String authorities = getAuthoritiesForRoute(request.path(), request.method());
-
-                    if (hasGrantedAuthoriy(userDetails, authorities)) {
-                        request.attribute(USER_DETAILS_ATTR, userDetails);
-                        authenticated = true;
+                        if (hasGrantedAuthoriy(userDetails, authorities)) {
+                            request.attribute(USER_DETAILS_ATTR, userDetails);
+                            authenticated = true;
+                        }
                     }
+                } catch (UserNotFoundException e) {
+                    Logger.debug("User not found", e);
                 }
-            } catch (UserNotFoundException e) {
-                Logger.debug("User not found", e);
             }
-        }
+        };
 
         return authenticated;
     }
