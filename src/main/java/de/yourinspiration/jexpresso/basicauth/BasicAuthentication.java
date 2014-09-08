@@ -124,7 +124,7 @@ public class BasicAuthentication implements MiddlewareHandler {
                     Logger.debug("User not found", e);
                 }
             }
-        };
+        }
 
         return authenticated;
     }
